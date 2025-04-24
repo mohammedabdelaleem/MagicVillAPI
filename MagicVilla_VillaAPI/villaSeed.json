@@ -1,0 +1,122 @@
+[
+  {
+    "Id": 1,
+    "Name": "Ocean Breeze Villa",
+    "Details": "A luxury villa with a stunning ocean view and private beach access.",
+    "Rate": 350.0,
+    "SqFt": 2200,
+    "Occupancy": 6,
+    "ImgUrl": "https://example.com/images/villa1.jpg",
+    "Amenity": "Pool, Sauna, Wi-Fi",
+    "CreatedDate": "2023-01-15T10:30:00",
+    "UpdatedDate": "2024-04-20T14:00:00"
+  },
+  {
+    "Id": 2,
+    "Name": "Mountain Escape",
+    "Details": "Cozy villa nestled in the mountains, perfect for a winter getaway.",
+    "Rate": 270.0,
+    "SqFt": 1800,
+    "Occupancy": 4,
+    "ImgUrl": "https://example.com/images/villa2.jpg",
+    "Amenity": "Fireplace, Hot Tub, Hiking Trails",
+    "CreatedDate": "2022-11-12T08:45:00",
+    "UpdatedDate": "2024-03-30T09:15:00"
+  },
+  {
+    "Id": 3,
+    "Name": "Urban Luxe",
+    "Details": "A stylish villa in the heart of the city, close to all attractions.",
+    "Rate": 300.0,
+    "SqFt": 1500,
+    "Occupancy": 3,
+    "ImgUrl": "https://example.com/images/villa3.jpg",
+    "Amenity": "Wi-Fi, Rooftop Access, City View",
+    "CreatedDate": "2023-05-01T12:00:00",
+    "UpdatedDate": "2024-01-25T13:30:00"
+  },
+  {
+    "Id": 4,
+    "Name": "Lakeside Retreat",
+    "Details": "Serene villa by the lake, ideal for peaceful weekends.",
+    "Rate": 200.0,
+    "SqFt": 1600,
+    "Occupancy": 4,
+    "ImgUrl": "https://example.com/images/villa4.jpg",
+    "Amenity": "Boat Dock, BBQ Grill, Deck",
+    "CreatedDate": "2023-08-10T09:00:00",
+    "UpdatedDate": "2024-02-18T10:45:00"
+  },
+  {
+    "Id": 5,
+    "Name": "Desert Dream",
+    "Details": "Modern villa with stunning desert views and luxurious interiors.",
+    "Rate": 280.0,
+    "SqFt": 1900,
+    "Occupancy": 5,
+    "ImgUrl": "https://example.com/images/villa5.jpg",
+    "Amenity": "Pool, Outdoor Shower, Wi-Fi",
+    "CreatedDate": "2022-09-22T11:20:00",
+    "UpdatedDate": "2024-04-01T12:15:00"
+  },
+  {
+    "Id": 6,
+    "Name": "Countryside Charm",
+    "Details": "Rustic villa surrounded by nature and rolling hills.",
+    "Rate": 180.0,
+    "SqFt": 1700,
+    "Occupancy": 4,
+    "ImgUrl": "https://example.com/images/villa6.jpg",
+    "Amenity": "Garden, Fireplace, Bicycles",
+    "CreatedDate": "2023-03-03T15:40:00",
+    "UpdatedDate": "2024-04-12T16:25:00"
+  },
+  {
+    "Id": 7,
+    "Name": "Jungle Hideaway",
+    "Details": "Hidden villa deep in the jungle, surrounded by wildlife.",
+    "Rate": 320.0,
+    "SqFt": 2000,
+    "Occupancy": 5,
+    "ImgUrl": "https://example.com/images/villa7.jpg",
+    "Amenity": "Hammocks, Wi-Fi, Guided Tours",
+    "CreatedDate": "2022-06-17T13:00:00",
+    "UpdatedDate": "2024-01-10T11:30:00"
+  },
+  {
+    "Id": 8,
+    "Name": "Island Paradise",
+    "Details": "Secluded villa on a private island, ultimate luxury experience.",
+    "Rate": 500.0,
+    "SqFt": 2500,
+    "Occupancy": 6,
+    "ImgUrl": "https://example.com/images/villa8.jpg",
+    "Amenity": "Private Beach, Pool, Butler Service",
+    "CreatedDate": "2023-04-05T07:10:00",
+    "UpdatedDate": "2024-04-15T08:55:00"
+  },
+  {
+    "Id": 9,
+    "Name": "Ski Chalet",
+    "Details": "Luxury villa near ski slopes, ideal for winter sports lovers.",
+    "Rate": 400.0,
+    "SqFt": 2100,
+    "Occupancy": 5,
+    "ImgUrl": "https://example.com/images/villa9.jpg",
+    "Amenity": "Heated Floors, Sauna, Ski Storage",
+    "CreatedDate": "2022-12-01T10:10:00",
+    "UpdatedDate": "2024-02-05T09:45:00"
+  },
+  {
+    "Id": 10,
+    "Name": "Tropical Bliss",
+    "Details": "Vibrant and colorful villa in a tropical setting with lush gardens.",
+    "Rate": 330.0,
+    "SqFt": 1950,
+    "Occupancy": 5,
+    "ImgUrl": "https://example.com/images/villa10.jpg",
+    "Amenity": "Outdoor Bar, Pool, Wi-Fi",
+    "CreatedDate": "2023-07-20T14:00:00",
+    "UpdatedDate": "2024-04-18T17:35:00"
+  }
+]
