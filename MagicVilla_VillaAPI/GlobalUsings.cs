@@ -6,6 +6,6 @@ global using MagicVilla_VillaAPI.Implementations;
 global using MagicVilla_VillaAPI.Data;
 global using Mapster;
 global using MapsterMapper;
-
+global using System.Net;
 global using Microsoft.EntityFrameworkCore;
 
