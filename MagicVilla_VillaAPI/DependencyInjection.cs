@@ -1,9 +1,5 @@
-﻿using MagicVilla_VillaAPI.Data;
-using Mapster;
-using MapsterMapper;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using System.Reflection;
+﻿using System.Reflection;
+using System.Text.Json;
 
 namespace MagicVilla_VillaAPI;
 
@@ -12,9 +8,16 @@ public static class DependencyInjection
 
 	public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
 	{	
-		services.AddControllers();
 
-		
+		services.AddControllers()
+	.AddJsonOptions(options =>
+	{
+		options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+	})
+	.AddNewtonsoftJson(); // Required for JsonPatchDocument
+
+
+
 		services
 			.AddSwaggerConfig()
 			.AddDatabaseConfig(configuration)
@@ -22,7 +25,8 @@ public static class DependencyInjection
 
 		
 
-		services.AddScoped<IVillaStoreService, VillaStoreService>();
+		services.AddScoped<IUnitOfWork, UnitOfWork>();
+		services.AddScoped<IVillaRepository, VillaRepository>();
 
 
 		return services;

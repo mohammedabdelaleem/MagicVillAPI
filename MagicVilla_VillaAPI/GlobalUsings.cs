@@ -1,5 +1,11 @@
 ﻿global using MagicVilla_VillaAPI;
 global using MagicVilla_VillaAPI.Models;
 global using MagicVilla_VillaAPI.Contracts.Villa;
-global using MagicVilla_VillaAPI.Services;
+global using MagicVilla_VillaAPI.Repositories;
+global using MagicVilla_VillaAPI.Implementations;
+global using MagicVilla_VillaAPI.Data;
+global using Mapster;
+global using MapsterMapper;
+
+global using Microsoft.EntityFrameworkCore;
 

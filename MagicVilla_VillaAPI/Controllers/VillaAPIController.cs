@@ -4,148 +4,135 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MagicVilla_VillaAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class VillaAPIController : ControllerBase
-    {
-        private readonly IVillaStoreService _villaStoreService;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class VillaAPIController : ControllerBase
+	{
+		private readonly IUnitOfWork _unitOfWork;
+		private readonly ILogger<VillaAPIController> _logger;
 
-        public VillaAPIController(IVillaStoreService villaStoreService)
-        {
-            _villaStoreService = villaStoreService;
-        }
+		public VillaAPIController(IUnitOfWork unitOfWork, ILogger<VillaAPIController> logger)
+		{
+			_unitOfWork = unitOfWork;
+			_logger = logger;
+		}
 
+		[HttpGet("all")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		public async Task<ActionResult<IEnumerable<VillaDTO>>> GetAll(CancellationToken cancellation = default)
+		{
+			var villas = await _unitOfWork.Villa.GetAllAsync(cancellationToken: cancellation);
+			return Ok(villas.Adapt<IEnumerable<VillaDTO>>());
+		}
 
-        [HttpGet("all")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<VillaCreateDTO>>> GetAll(CancellationToken cancellation = default)
-        {
-            var villas = await _villaStoreService.GetAllAsync(cancellation);
-            var response = villas.Adapt<IEnumerable<VillaDTO>>();
+		[HttpGet("{id:int}")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult<VillaDTO>> Get(int id, CancellationToken cancellationToken = default)
+		{
+			if (id <= 0)
+				return BadRequest(new { message = "Invalid ID. ID must be greater than zero." });
 
-            return Ok(villas);
-        }
+			var villa = await _unitOfWork.Villa.GetAsync(v => v.Id == id, cancellationToken: cancellationToken);
 
+			if (villa == null)
+				return NotFound(new { message = $"Villa with ID {id} not found." });
 
-        [HttpGet("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<VillaDTO>> Get([FromRoute]int id, CancellationToken cancellationToken = default)
-        {
-            if (id == 0)
-            {
-                return BadRequest(new { message = "Id Can't Be Zero" });
-            }
+			return Ok(villa.Adapt<VillaDTO>());
+		}
 
-            var villa = await _villaStoreService.GetAsync(id, cancellationToken: cancellationToken);
+		[HttpPost]
+		[ProducesResponseType(StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		public async Task<ActionResult> Add([FromBody] VillaCreateDTO villaRequest, CancellationToken cancellationToken = default)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
-            if (villa == null)
-            {
-                return NotFound();
-            }
+			var villa = await _unitOfWork.Villa.AddAsync(villaRequest.Adapt<Villa>(), cancellationToken);
 
-            return Ok(villa.Adapt<VillaDTO>());
-        }
+			if (villa == null)
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Failed to create villa." });
 
+			if (await _unitOfWork.CompleteAsync(cancellationToken) > 0)
+				_logger.LogInformation("Villa created successfully. ID: {Id}, Time: {Time}", villa.Id, DateTime.UtcNow);
 
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Add([FromBody] VillaCreateDTO villaRequset, CancellationToken cancellationToken = default)
-        {
-          
-            Villa villa = await _villaStoreService.AddAsync(villaRequset.Adapt<Villa>());
+			return CreatedAtAction(nameof(Get), new { id = villa.Id }, villa.Adapt<VillaDTO>());
+		}
 
-            if (villa == null)
-                return StatusCode(StatusCodes.Status500InternalServerError);
+		[HttpDelete("{id:int}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<IActionResult> DeleteVilla(int id, CancellationToken cancellationToken = default)
+		{
+			if (id <= 0)
+				return BadRequest(new { message = "Invalid ID. ID must be greater than zero." });
 
+			var exists = await _unitOfWork.Villa.IsExistsAsync(v => v.Id == id, cancellationToken);
+			if (!exists)
+				return NotFound(new { message = $"Villa with ID {id} not found." });
 
-            return CreatedAtAction(nameof(Get), new { id = villa.Id }, villa);
-        }
+			await _unitOfWork.Villa.DeleteAsync(id, cancellationToken);
 
+			if (await _unitOfWork.CompleteAsync(cancellationToken) > 0)
+				_logger.LogInformation("Villa deleted successfully. ID: {Id}, Time: {Time}", id, DateTime.UtcNow);
 
+			return NoContent();
+		}
 
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> DeleteVilla(int id, CancellationToken cancellationToken = default)
-        {
-            if (id == 0)
-            {
-                return BadRequest(new { message = "Id Can't Be Zero" });
-            }
+		[HttpPut("{id:int}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult> UpdateVilla(int id, [FromBody] VillaUpdateDTO villaRequest, CancellationToken cancellationToken = default)
+		{
+			if (id != villaRequest.Id)
+				return BadRequest(new { message = "ID mismatch between route and payload." });
 
-            var villaExists = await _villaStoreService.IsExistsAsync(id, cancellationToken);
+			var existing = await _unitOfWork.Villa.GetAsync(v => v.Id == id, cancellationToken: cancellationToken);
+			if (existing == null)
+				return NotFound(new { message = $"Villa with ID {id} not found." });
 
-            if (!villaExists)
-            {
-                return NotFound();
-            }
+			villaRequest.Adapt(existing);
 
-            await _villaStoreService.DeleteAsync(id, cancellationToken);
-            return NoContent();
+			await _unitOfWork.Villa.Update(id, existing, cancellationToken);
 
-        }
+			if (await _unitOfWork.CompleteAsync(cancellationToken) <= 0)
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Update failed. Please try again later." });
 
+			return NoContent();
+		}
 
+		[HttpPatch("{id:int}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		public async Task<ActionResult> UpdatePartialVilla(int id, [FromBody] JsonPatchDocument<VillaUpdateDTO> patchDTO, CancellationToken cancellationToken = default)
+		{
+			if (patchDTO is null || id <= 0)
+				return BadRequest(new { message = "Invalid patch document or ID." });
 
-        [HttpPut("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> UpdateVilla(int id, [FromBody] VillaUpdateDTO villaRequest, CancellationToken cancellationToken = default)
-        {
-            if (id != villaRequest.Id)
-                return BadRequest(new { message = "Check Your Input Id And Model" });
+			var villa = await _unitOfWork.Villa.GetAsync(v => v.Id == id, tracking: false, cancellationToken: cancellationToken);
+			if (villa == null)
+				return NotFound(new { message = $"Villa with ID {id} not found." });
 
-            if (!await _villaStoreService.EditAsync(id, villaRequest.Adapt<Villa>(), cancellationToken))
-                return NotFound(new { message = $"ERROR : Poll {id} Not Updated" });
+			var villaToPatch = villa.Adapt<VillaUpdateDTO>();
+			patchDTO.ApplyTo(villaToPatch, ModelState);
 
-            return NoContent();
+			if (!ModelState.IsValid || !TryValidateModel(villaToPatch))
+				return ValidationProblem(ModelState);
 
-        }
+			villaToPatch.Adapt(villa); // map back to the tracked entity
 
+			await _unitOfWork.Villa.Update(id, villa, cancellationToken);
+			if (await _unitOfWork.CompleteAsync(cancellationToken) <= 0)
+				return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Partial update failed." });
 
-
-        [HttpPatch("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> UpdatePartialVilla(int id, [FromBody] JsonPatchDocument<VillaUpdateDTO> patchDTO, CancellationToken cancellationToken = default)
-        {
-            if (patchDTO is null || id <= 0)
-            {
-                return BadRequest("Invalid patch document or ID.");
-            }
-
-            // Track The Model With Id 
-            var villa = await _villaStoreService.GetAsync(id, cancellationToken:cancellationToken, tracking:false);
-
-            // i don't track the entity from here
-
-            if (villa == null)
-            {
-                return NotFound(new { message = $"Poll with {nameof(id)} {id} not found" });
-            }
-
-            var villaToPatch = villa.Adapt<VillaUpdateDTO>(); // Request With Request  ==> Same Models
-
-            patchDTO.ApplyTo(villaToPatch, ModelState);
-
-            if (!ModelState.IsValid || !TryValidateModel(villaToPatch))
-            {
-                return ValidationProblem(ModelState);
-            }
-
-			villaToPatch.Adapt(villa); // Map back patched data to entity
-
-
-			// Track The Same Model With Id : This is a big problem for EF Core ==> That is Imposible
-			await _villaStoreService.EditAsync(id, villa, cancellationToken);
-
-            return NoContent();
-        }
-
-    }
+			_logger.LogInformation("Villa patched successfully. ID: {Id}, Time: {Time}", id, DateTime.UtcNow);
+			return NoContent();
+		}
+	}
 }
