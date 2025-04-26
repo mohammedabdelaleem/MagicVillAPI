@@ -24,9 +24,11 @@ public static class DependencyInjection
 			.AddMapsterConfig();
 
 		
-
+		// adding service life time
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
 		services.AddScoped<IVillaRepository, VillaRepository>();
+		services.AddScoped<IVillaNumberRepository, VillaNumberRepository>();
+
 
 
 		return services;
