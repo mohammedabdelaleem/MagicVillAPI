@@ -132,7 +132,7 @@ namespace MagicVilla_VillaAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
-		public async Task<ActionResult<ApiResponse>> UpdateVilla(int id, [FromBody] VillaUpdateDTO villaRequest, CancellationToken cancellationToken = default)
+		public async Task<ActionResult<ApiResponse>> UpdateVilla(/*[FromQuery]*/int id, [FromBody] VillaUpdateDTO villaRequest, CancellationToken cancellationToken = default)
 		{
 			try
 			{

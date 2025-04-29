@@ -1,0 +1,59 @@
+﻿@model VillaUpdateDTO
+
+<form asp-action="Update" asp-controller="Villa" class="container mt-4">
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+    <input hidden asp-for="Id" />
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Details" class="form-label"></label>
+        <textarea asp-for="Details" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Details" class="text-danger"></span>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="Rate" class="form-label"></label>
+            <input asp-for="Rate" class="form-control" />
+            <span asp-validation-for="Rate" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="SqFt" class="form-label"></label>
+            <input asp-for="SqFt" class="form-control" />
+            <span asp-validation-for="SqFt" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="Occupancy" class="form-label"></label>
+            <input asp-for="Occupancy" class="form-control" />
+            <span asp-validation-for="Occupancy" class="text-danger"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="ImgUrl" class="form-label"></label>
+            <input asp-for="ImgUrl" class="form-control" />
+            <span asp-validation-for="ImgUrl" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Amenity" class="form-label"></label>
+        <textarea asp-for="Amenity" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Amenity" class="text-danger"></span>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <a asp-action="Index" class="btn btn-secondary">Back To List</a>
+        <input type="submit" class="btn btn-primary" value="Save" />
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

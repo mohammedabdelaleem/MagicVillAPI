@@ -1,0 +1,53 @@
+﻿@model List<VillaDTO>
+
+<a asp-action="Create" asp-controller="Villa" class="btn btn-primary d-inline-flex align-items-center">
+    <i class="bi bi-plus-square-fill me-2"></i>
+    Add New
+</a>
+
+<table class="table table-bordered table-hover" style="margin-top : 20px">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Occupancy</th>
+            <th>Price</th>
+            <th></th> 
+        </tr>
+    </thead>
+    @if (Model != null && Model.Any())
+    {
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Occupancy</td>
+                    <td>@((item.Rate).ToString("c"))</td>
+                    <td>
+                        <a asp-action="Update" asp-route-villaId="@item.Id" asp-controller="Villa" class="btn btn-success">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+
+                        <a asp-action="Delete" asp-route-villaId="@item.Id" asp-controller="Villa" class="btn btn-danger">
+                            <i class="bi bi-trash3-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    }
+    else
+    {
+        <tbody>
+            <tr>
+                <td colspan="4" class="text-center">No villas available.</td>
+            </tr>
+        </tbody>
+    }
+
+</table>
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Villa/style.css" asp-append-version="true" />
+}

@@ -2,6 +2,7 @@
 
 public record VillaCreateDTO
 {
+
 	public string Name { get; set; }
 	public string Details { get; set; }
 	public double Rate { get; set; }
