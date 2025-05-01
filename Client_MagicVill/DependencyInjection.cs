@@ -22,6 +22,9 @@ public static class DependencyInjection
 		// 
 		services.AddHttpClient<IVillaService, VillaService>();
 		services.AddScoped<IVillaService, VillaService>();
+		 
+		services.AddHttpClient<IVillaNumberService, VillaNumberService>();
+		services.AddScoped<IVillaNumberService, VillaNumberService>();
 
 
 		return services;

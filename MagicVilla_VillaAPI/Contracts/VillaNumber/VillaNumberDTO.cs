@@ -11,4 +11,6 @@ public record VillaNumberDTO
 
 	[Required]
 	public int VillaId { get; set; }
+
+	public VillaDTO Villa { get; set; }
 }

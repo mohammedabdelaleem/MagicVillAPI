@@ -1,0 +1,38 @@
+﻿@model VillaNumberCreateDTOWithItsVillaNameVM
+
+<form asp-action="Create" asp-controller="VillaNumber" class="container mt-4">
+    <div asp-validation-summary="All" class="@(ViewData.ModelState.IsValid ? "" : "alert alert-danger")"></div>
+
+    <div class="mb-3">
+        <label asp-for="VillaNumber.VillaNo" class="form-label"></label>
+        <input asp-for="VillaNumber.VillaNo" class="form-control" />
+        <span asp-validation-for="VillaNumber.VillaNo" class="text-danger"></span>
+    </div>
+
+    <hr />
+     <label asp-for="VillaNumber.VillaId" class="control-label"></label>
+    <select asp-for="VillaNumber.VillaId" asp-items="Model.VillaList">
+        <option disabled selected> -- Select Category --</option>
+    </select>
+
+    <hr />
+
+    <div class="mb-3">
+        <label asp-for="VillaNumber.Details" class="form-label"></label>
+        <textarea asp-for="VillaNumber.Details" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="VillaNumber.Details" class="text-danger"></span>
+    </div>
+
+
+   
+
+
+    <div class="d-flex justify-content-between mt-5">
+        <a asp-action="Index" class="btn btn-secondary">Back To List</a>
+        <input type="submit" class="btn btn-primary" value="Save" />
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

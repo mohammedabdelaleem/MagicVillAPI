@@ -1,7 +1,5 @@
-﻿using Client_MagicVill.Models;
-using Client_MagicVill.Servicies.IServicies;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System.Net;
 using System.Text;
 
 namespace Client_MagicVill.Servicies;
@@ -9,15 +7,17 @@ namespace Client_MagicVill.Servicies;
 //This class is responsible for sending HTTP requests (GET, POST, PUT, DELETE) to an API.
 public class BaseService : IBaseService
 {
+	private readonly ILogger<BaseService> _logger;
 	public ApiResponse _responseModel { get; set; }
 
 
 	// in order to [ call the api ] we will using IHttpClientFactory that is already injected at DI
 	public IHttpClientFactory _httpClient { get; set; }
-	public BaseService(IHttpClientFactory httpClient)
+	public BaseService(IHttpClientFactory httpClient, ILogger<BaseService> logger)
 	{
 		_responseModel = new();
 		_httpClient = httpClient;
+		_logger = logger;
 	}
 
 
@@ -66,8 +66,17 @@ public class BaseService : IBaseService
 			}
 
 			// send the HTTP request to the server and wait for the response
-			HttpResponseMessage apiResponse = null;
-			apiResponse = await client.SendAsync(message);
+			HttpResponseMessage apiResponse = await client.SendAsync(message);
+
+			// Check and log if the response is null
+			if (apiResponse == null)
+			{
+				_logger.LogError($"\n\nApi response is null. No status code available., please recheck {apiRequest.Url} \n\n");
+			}
+			else if (!apiResponse.IsSuccessStatusCode)
+			{
+				_logger.LogWarning($"\n\nAPI call returned non-success status code: {apiResponse.StatusCode}, please recheck {apiRequest.Url} \n\n");
+			}
 
 
 			// Read and deserialize response
@@ -76,8 +85,34 @@ public class BaseService : IBaseService
 			// Deserialize it from JSON into the type T you expect(generic).
 			// Return it to the caller.
 			var apiContent = await apiResponse.Content.ReadAsStringAsync();
-			var ApiResponse = JsonConvert.DeserializeObject<T>(apiContent);
-			return ApiResponse;
+
+
+			// Problem is We Need To Stop If There are ErrorMessages , Is Success is false and Display The Error Messages
+			// At My App , I Sure That My Response Is APIResponse .So We Do That.
+			// If We Are At Any Other App Which Work With Generic We Need To Do This In Another Way.
+
+			try
+			{
+				ApiResponse response = JsonConvert.DeserializeObject<ApiResponse>(apiContent);
+
+				if(apiResponse.StatusCode == HttpStatusCode.BadRequest || 
+					apiResponse.StatusCode == HttpStatusCode.NotFound)
+				{
+					response.StatusCode = HttpStatusCode.BadRequest;
+					response.IsSuccess = false;
+				}
+
+				var result = JsonConvert.SerializeObject(response );
+				var returnObj = JsonConvert.DeserializeObject<T>(result);
+				return returnObj;
+			}
+			catch (Exception ex)
+			{
+				var response = JsonConvert.DeserializeObject<T>(apiContent);
+				return response;
+
+			}
+
 		}
 		catch (Exception ex)
 		{
@@ -94,4 +129,9 @@ public class BaseService : IBaseService
 		}
 
 	}
+
+
+
+
+
 }

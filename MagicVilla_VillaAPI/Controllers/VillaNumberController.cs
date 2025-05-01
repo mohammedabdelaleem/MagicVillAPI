@@ -30,7 +30,7 @@ public class VillaNumberController : ControllerBase
 	{
 		try
 		{
-			var villas = await _unitOfWork.VillaNumber.GetAllAsync(cancellationToken: cancellation);
+			var villas = await _unitOfWork.VillaNumber.GetAllAsync(include:nameof(Villa) ,cancellationToken: cancellation);
 
 			_response = new(statusCode: HttpStatusCode.OK, result: villas);
 
@@ -55,7 +55,7 @@ public class VillaNumberController : ControllerBase
 			if (villaNo <= 0)
 				return BadRequest(new { message = "Invalid ID. ID must be greater than zero." });
 
-			var villa = await _unitOfWork.VillaNumber.GetAsync(v => v.VillaNo == villaNo, cancellationToken: cancellationToken);
+			var villa = await _unitOfWork.VillaNumber.GetAsync(v => v.VillaNo == villaNo,  include: nameof(Villa), cancellationToken: cancellationToken);
 
 			if (villa == null)
 				return NotFound(new { message = $"Villa with ID {villaNo} not found." });
@@ -80,9 +80,9 @@ public class VillaNumberController : ControllerBase
 	{
 		try
 		{
-			if (! await _villaRepository.IsExistsAsync(v=>v.Id == villaNumberRequest.VillaId))
+			if ( await _villaNumberRepository.IsExistsAsync(v=>v.VillaNo == villaNumberRequest.VillaNo))
 			{
-				ModelState.AddModelError("Custome Error", "Invalid Vill Id");
+				ModelState.AddModelError("ErrorMessages", "Vill Number Already Found");
 				return BadRequest(ModelState);
 			}
 
@@ -121,7 +121,7 @@ public class VillaNumberController : ControllerBase
 		{
 			if (!await _villaNumberRepository.IsExistsAsync(v => v.VillaNo == villaNo))
 			{
-				ModelState.AddModelError("Custome Error", "Invalid Vill Number Id");
+				ModelState.AddModelError("ErrorMessages", "Invalid Vill Number Id");
 				return BadRequest(ModelState);
 			}
 		
@@ -160,13 +160,13 @@ public class VillaNumberController : ControllerBase
 
 			if (!await _villaRepository.IsExistsAsync(v => v.Id == villaRequest.VillaId))
 			{
-				ModelState.AddModelError("Custome Error", "Invalid Vill Id");
+				ModelState.AddModelError("ErrorMessages", "Invalid Vill Id");
 				return BadRequest(ModelState);
 			}
 
 			if (!await _villaNumberRepository.IsExistsAsync(v => v.VillaNo ==villaNo))
 			{
-				ModelState.AddModelError("Custome Error", "Invalid Vill Nubmer Id");
+				ModelState.AddModelError("ErrorMessages", "Invalid Vill Nubmer Id");
 				return BadRequest(ModelState);
 			}
 

@@ -10,5 +10,8 @@ public record VillaNumberDTO
 	public string Details { get; set; }
 
 	[Required]
+	[Display(Name ="Villa")]
 	public int VillaId { get; set; }
+
+	public VillaDTO Villa { get; set; }
 }

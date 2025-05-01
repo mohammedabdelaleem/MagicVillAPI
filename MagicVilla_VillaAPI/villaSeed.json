@@ -6,7 +6,7 @@
     "Rate": 350.0,
     "SqFt": 2200,
     "Occupancy": 6,
-    "ImgUrl": "https://example.com/images/villa1.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa1.jpg",
     "Amenity": "Pool, Sauna, Wi-Fi",
     "CreatedDate": "2023-01-15T10:30:00",
     "UpdatedDate": "2024-04-20T14:00:00"
@@ -18,7 +18,7 @@
     "Rate": 270.0,
     "SqFt": 1800,
     "Occupancy": 4,
-    "ImgUrl": "https://example.com/images/villa2.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa2.jpg",
     "Amenity": "Fireplace, Hot Tub, Hiking Trails",
     "CreatedDate": "2022-11-12T08:45:00",
     "UpdatedDate": "2024-03-30T09:15:00"
@@ -30,7 +30,7 @@
     "Rate": 300.0,
     "SqFt": 1500,
     "Occupancy": 3,
-    "ImgUrl": "https://example.com/images/villa3.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa3.jpg",
     "Amenity": "Wi-Fi, Rooftop Access, City View",
     "CreatedDate": "2023-05-01T12:00:00",
     "UpdatedDate": "2024-01-25T13:30:00"
@@ -42,7 +42,7 @@
     "Rate": 200.0,
     "SqFt": 1600,
     "Occupancy": 4,
-    "ImgUrl": "https://example.com/images/villa4.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa4.jpg",
     "Amenity": "Boat Dock, BBQ Grill, Deck",
     "CreatedDate": "2023-08-10T09:00:00",
     "UpdatedDate": "2024-02-18T10:45:00"
@@ -54,7 +54,7 @@
     "Rate": 280.0,
     "SqFt": 1900,
     "Occupancy": 5,
-    "ImgUrl": "https://example.com/images/villa5.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa5.jpg",
     "Amenity": "Pool, Outdoor Shower, Wi-Fi",
     "CreatedDate": "2022-09-22T11:20:00",
     "UpdatedDate": "2024-04-01T12:15:00"
@@ -66,7 +66,7 @@
     "Rate": 180.0,
     "SqFt": 1700,
     "Occupancy": 4,
-    "ImgUrl": "https://example.com/images/villa6.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa3.jpg",
     "Amenity": "Garden, Fireplace, Bicycles",
     "CreatedDate": "2023-03-03T15:40:00",
     "UpdatedDate": "2024-04-12T16:25:00"
@@ -78,7 +78,7 @@
     "Rate": 320.0,
     "SqFt": 2000,
     "Occupancy": 5,
-    "ImgUrl": "https://example.com/images/villa7.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa2.jpg",
     "Amenity": "Hammocks, Wi-Fi, Guided Tours",
     "CreatedDate": "2022-06-17T13:00:00",
     "UpdatedDate": "2024-01-10T11:30:00"
@@ -90,7 +90,7 @@
     "Rate": 500.0,
     "SqFt": 2500,
     "Occupancy": 6,
-    "ImgUrl": "https://example.com/images/villa8.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa5.jpg",
     "Amenity": "Private Beach, Pool, Butler Service",
     "CreatedDate": "2023-04-05T07:10:00",
     "UpdatedDate": "2024-04-15T08:55:00"
@@ -102,7 +102,7 @@
     "Rate": 400.0,
     "SqFt": 2100,
     "Occupancy": 5,
-    "ImgUrl": "https://example.com/images/villa9.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa4.jpg",
     "Amenity": "Heated Floors, Sauna, Ski Storage",
     "CreatedDate": "2022-12-01T10:10:00",
     "UpdatedDate": "2024-02-05T09:45:00"
@@ -114,7 +114,7 @@
     "Rate": 330.0,
     "SqFt": 1950,
     "Occupancy": 5,
-    "ImgUrl": "https://example.com/images/villa10.jpg",
+    "ImgUrl": "https://dotnetmastery.com/bluevillaimages/villa1.jpg",
     "Amenity": "Outdoor Bar, Pool, Wi-Fi",
     "CreatedDate": "2023-07-20T14:00:00",
     "UpdatedDate": "2024-04-18T17:35:00"

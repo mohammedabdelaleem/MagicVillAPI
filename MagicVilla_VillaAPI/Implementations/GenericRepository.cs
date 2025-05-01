@@ -43,7 +43,7 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 		if (include != null && !string.IsNullOrWhiteSpace(include))
 		{
 			// context.Categories.Include("Users,Logos,Products").Tolist();
-			foreach (var entity in include.Split(","))
+			foreach (var entity in include.Split(",", StringSplitOptions.RemoveEmptyEntries))
 			{
 				query = query.Include(entity);
 			}
@@ -51,16 +51,24 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 		return await query.ToListAsync(cancellationToken);
 	}
 
-	public async Task<T?> GetAsync(Expression<Func<T, bool>> filter, bool tracking =true, CancellationToken cancellationToken = default)
+	public async Task<T?> GetAsync(Expression<Func<T, bool>> filter, bool tracking =true, string include = null, CancellationToken cancellationToken = default)
 	{
-		T model;
-		if (tracking)
-			model = await _dbSet.AsNoTracking().FirstOrDefaultAsync(filter, cancellationToken);
 
-		else
-			model = await _dbSet.FirstOrDefaultAsync(filter, cancellationToken);
+		IQueryable<T> query = _dbSet;
 
-		return model;
+
+		if (!string.IsNullOrWhiteSpace(include))
+		{
+			foreach (var entity in include.Split(",", StringSplitOptions.RemoveEmptyEntries))
+			{
+				query = query.Include(entity.Trim());
+			}
+		}
+
+		if (!tracking)
+			query = query.AsNoTracking();
+
+		return await query.FirstOrDefaultAsync(filter, cancellationToken);
 	}
 
 	public async Task<bool> IsExistsAsync(Expression<Func<T, bool>> filter, CancellationToken cancellationToken = default)

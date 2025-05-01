@@ -2,69 +2,65 @@
 
 namespace Client_MagicVill.Servicies;
 
-public class VillaService : BaseService, IVillaService
+public class VillaNumberService : BaseService, IVillaNumberService
 {
 	private readonly IHttpClientFactory _httpClient;
-	private string villaApi;
+	private string villaNumberApi;
 
-	public VillaService(IHttpClientFactory httpClient, IConfiguration configuration, ILogger<BaseService> logger) : base(httpClient,logger)
+	public VillaNumberService(IHttpClientFactory httpClient, IConfiguration configuration, ILogger<BaseService> logger) : base(httpClient,logger)
 	{
 		_httpClient = httpClient;
-		villaApi = configuration.GetValue<string>("UrlServices:VillaApi")!;
+		villaNumberApi = configuration.GetValue<string>("UrlServices:villaApi")!;
 	}
 
-	public Task<T> CreateAsync<T>(VillaCreateDTO dto)
+	public Task<T> CreateAsync<T>(VillaNumberCreateDTO dto)
 	{
 		return SendAsync<T>(
 			new ApiRequest
 			{
 				ApiType = ApiType.POST,
-				Url = villaApi + "/api/VillaAPI",
+				Url = villaNumberApi + "/api/villaNumber",
 				Data = dto
 			}
 			);
 	}
-
 	public Task<T> DeleteAsync<T>(int id)
 	{
 		return SendAsync<T>(
 		new ApiRequest
 		{
 			ApiType = ApiType.DELETE,
-			Url = villaApi + "/api/VillaAPI/"+id,
+			Url = villaNumberApi + "/api/villaNumber/"+id,
 		}
 		);
 	}
-
 	public Task<T> GetAllAsync<T>()
 	{
 			return SendAsync<T>(
 			new ApiRequest
 			{
 				ApiType = ApiType.GET,
-				Url = villaApi + "/api/VillaAPI/all"
+				Url = villaNumberApi + "/api/villaNumber/all"
 			}
 			);
 	}
-
 	public Task<T> GetAsync<T>(int id)
 	{
 		return SendAsync<T>(
 		new ApiRequest
 		{
 			ApiType = ApiType.GET,
-			Url = villaApi + "/api/VillaAPI/"+id,
+			Url = villaNumberApi + "/api/villaNumber/"+id,
 		}
 		);
 	}
-
-	public Task<T> UpdateAsync<T>(VillaUpdateDTO dto)
+	public Task<T> UpdateAsync<T>(VillaNumberUpdateDTO dto)
 	{
 		return SendAsync<T>(
 		new ApiRequest
 		{
 			ApiType = ApiType.PUT,
-			Url = villaApi + "/api/VillaAPI/"+dto.Id,
+			Url = villaNumberApi + "/api/villaNumber/"+dto.VillaNo,
 			Data = dto
 		}
 		);

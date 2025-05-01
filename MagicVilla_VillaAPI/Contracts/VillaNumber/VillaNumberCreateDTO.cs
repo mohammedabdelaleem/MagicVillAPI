@@ -5,6 +5,7 @@ namespace MagicVilla_VillaAPI.Contracts.VillaNumber;
 public record VillaNumberCreateDTO
 {
 	[Required]
+	[Display(Name ="Villa Number")]
 	public int VillaNo { get; set; }
 
 	public string Details { get; set; }
