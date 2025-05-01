@@ -46,11 +46,13 @@ public class VillaController : Controller
 
 				if (response != null && response.IsSuccess)
 				{
-					return RedirectToAction(nameof(Index));
+				TempData["success"] = "Villa Created Successfully";
+				return RedirectToAction(nameof(Index));
 				}
 			}
 
-			return View(model);
+		TempData["error"] = "error encountered";
+		return View(model);
 		}
 
 
@@ -80,11 +82,13 @@ public class VillaController : Controller
 
 				if (response != null && response.IsSuccess)
 				{
-					return RedirectToAction(nameof(Index));
+				TempData["success"] = "Villa Updated Successfully";
+				return RedirectToAction(nameof(Index));
 				}
 			}
 
-			return View(model);
+		TempData["error"] = "error encountered";
+		return View(model);
 
 		}
 
@@ -116,11 +120,12 @@ public class VillaController : Controller
 
 			if (response != null && response.IsSuccess)
 			{
-				return RedirectToAction(nameof(Index));
+			TempData["success"] = "Villa Deleted Successfully";
+			return RedirectToAction(nameof(Index));
 			}
 
-
-			return View(model);
+		TempData["error"] = "error encountered";
+		return View(model);
 
 		}
 

@@ -66,12 +66,14 @@ public class VillaNumberController : Controller
 
 			if (response != null && response.IsSuccess)
 			{
+				TempData["success"] = "New Villa Number Created Successfully";
 				return RedirectToAction(nameof(Index));
 			}
 			else
 			{
 				if(response.ErrorMessages.Count > 0)
 				{
+					TempData["error"] = "error encountered";
 					ModelState.AddModelError("ErrorMessages" , response.ErrorMessages.FirstOrDefault());	
 				}
 			}
@@ -87,15 +89,17 @@ public class VillaNumberController : Controller
 			Text = x.Name,
 			Value = x.Id.ToString()
 		});
+
+		TempData["error"] = "error encountered";
 		return View(model);
 	}
 
 
-	public async Task<IActionResult> Update(int villaId)
+	public async Task<IActionResult> Update(int villaNo)
 	{
 		var model = new VillaNumberUpdateDTOWithItsVillaNameVM();
 
-		var response = await _villaNumberService.GetAsync<ApiResponse>(villaId);
+		var response = await _villaNumberService.GetAsync<ApiResponse>(villaNo);
 		if (response != null && response.IsSuccess)
 		{
 			VillaNumberDTO villaNumber = JsonConvert.DeserializeObject<VillaNumberDTO>(Convert.ToString(response.Result));
@@ -129,12 +133,14 @@ public class VillaNumberController : Controller
 
 			if (response != null && response.IsSuccess)
 			{
+				TempData["success"] = "Villa Number Updated Successfully";
 				return RedirectToAction(nameof(Index));
 			}
 			else
 			{
 				if (response.ErrorMessages.Count > 0)
 				{
+					TempData["error"] = "error encountered";
 					ModelState.AddModelError("ErrorMessages", response.ErrorMessages.FirstOrDefault());
 				}
 			}
@@ -148,6 +154,8 @@ public class VillaNumberController : Controller
 			Text = x.Name,
 			Value = x.Id.ToString()
 		});
+
+		TempData["error"] = "error encountered";
 		return View(model);
 	}
 
@@ -173,10 +181,11 @@ public class VillaNumberController : Controller
 					Value = x.Id.ToString()
 				});
 
-
+			//TempData[key: "error"] = "error encountered";
 			return View(model);
 		}
 
+		TempData["error"] = "Not Found";
 		return NotFound();
 	}
 
@@ -190,10 +199,11 @@ public class VillaNumberController : Controller
 
 		if (response != null && response.IsSuccess)
 		{
+			TempData["success"] = "Villa Number Deleted Successfully";
 			return RedirectToAction(nameof(Index));
 		}
 
-
+		TempData["error"] = "error encountered";
 		return View(model);
 
 	}

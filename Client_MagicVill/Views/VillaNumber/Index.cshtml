@@ -10,8 +10,7 @@
         <tr>
             <th>Villa Name</th>
             <th>Villa Number</th>
-            <th>Price</th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     @if (Model != null && Model.Any())
@@ -22,6 +21,7 @@
                 <tr>
                     <td>@item.Villa.Name</td>
                     <td>@item.VillaNo</td>
+                 
                     <td>
                         <a asp-action="Update" asp-route-villaNo="@item.VillaNo" asp-controller="VillaNumber" class="btn btn-success">
                             <i class="bi bi-pencil-square"></i>
