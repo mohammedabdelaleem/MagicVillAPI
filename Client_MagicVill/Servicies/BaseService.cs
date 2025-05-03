@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace Client_MagicVill.Servicies;
@@ -65,8 +66,22 @@ public class BaseService : IBaseService
 					break;
 			}
 
+			HttpResponseMessage apiResponse = null;
+
+			//if (!string.IsNullOrEmpty(apiRequest.Token))
+			//{
+			//	client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiRequest.Token);
+			//}
+
+			if (!string.IsNullOrEmpty(apiRequest.Token))
+			{
+				message.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiRequest.Token);
+			}
+
+
+
 			// send the HTTP request to the server and wait for the response
-			HttpResponseMessage apiResponse = await client.SendAsync(message);
+			apiResponse = await client.SendAsync(message);
 
 			// Check and log if the response is null
 			if (apiResponse == null)

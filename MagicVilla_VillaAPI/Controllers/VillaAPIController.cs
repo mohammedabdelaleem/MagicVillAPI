@@ -24,7 +24,6 @@ namespace MagicVilla_VillaAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
-		[Authorize]
 		public async Task<ActionResult<ApiResponse>> GetAll(CancellationToken cancellation = default)
 		{
 			try
@@ -44,9 +43,6 @@ namespace MagicVilla_VillaAPI.Controllers
 
 
 		[HttpGet("{id:int}")]
-		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-		[ProducesResponseType(StatusCodes.Status403Forbidden)]
-		[Authorize(Roles ="admin")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -74,10 +70,14 @@ namespace MagicVilla_VillaAPI.Controllers
 			}
 		}
 
+
 		[HttpPost]
 		[ProducesResponseType(StatusCodes.Status201Created)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[Authorize(Roles ="admin")]
 		public async Task<ActionResult<ApiResponse>> Add([FromBody] VillaCreateDTO villaRequest, CancellationToken cancellationToken = default)
 		{
 			try
@@ -112,7 +112,7 @@ namespace MagicVilla_VillaAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
-		[Authorize("custom")]
+		[Authorize(Roles = "admin")]
 		public async Task<ActionResult<ApiResponse>> DeleteVilla(int id, CancellationToken cancellationToken = default)
 		{
 			try
@@ -145,6 +145,9 @@ namespace MagicVilla_VillaAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[Authorize(Roles = "admin")]
 		public async Task<ActionResult<ApiResponse>> UpdateVilla(/*[FromQuery]*/int id, [FromBody] VillaUpdateDTO villaRequest, CancellationToken cancellationToken = default)
 		{
 			try
@@ -178,6 +181,10 @@ namespace MagicVilla_VillaAPI.Controllers
 		[ProducesResponseType(StatusCodes.Status204NoContent)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+		[ProducesResponseType(StatusCodes.Status403Forbidden)]
+		[Authorize(Roles = "admin")]
+
 		public async Task<ActionResult<ApiResponse>> UpdatePartialVilla(int id, [FromBody] JsonPatchDocument<VillaUpdateDTO> patchDTO, CancellationToken cancellationToken = default)
 		{
 			try

@@ -75,7 +75,7 @@ public class UserRepository : IUserRepository
 			Subject = new ClaimsIdentity(new[]
 			{
 				new Claim(ClaimTypes.Name, user.Id.ToString()),       // user ID as Name claim
-				new Claim(ClaimTypes.Role, user.Role.ToString())      // user role (e.g., Admin/User)
+				new Claim(ClaimTypes.Role, user.Role)      // user role (e.g., Admin/User)
 			}),
 			Expires = DateTime.UtcNow.AddDays(5), // token will expire in 5 days
 			SigningCredentials = new SigningCredentials(

@@ -6,3 +6,4 @@ global using Client_MagicVill.Contracts.Villa;
 global using Client_MagicVill.Contracts.VillaNumber;
 global using Client_MagicVill.Models;
 global using Client_MagicVill.Models.VM;
+global using Client_MagicVill.Contracts.Auth;

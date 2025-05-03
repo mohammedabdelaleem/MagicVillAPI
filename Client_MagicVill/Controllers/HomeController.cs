@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MagicVilla_Utility;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace Client_MagicVill.Controllers;
@@ -11,12 +12,13 @@ public class HomeController : Controller
 		_villaService = villaService;
 	}
 
+
 	public async Task<IActionResult> Index()
 	{
 		List<VillaDTO> villas = new();
 
 		// Api Will Always Return The Type : APIResponse
-		var response = await _villaService.GetAllAsync<ApiResponse>();
+		var response = await _villaService.GetAllAsync<ApiResponse>(HttpContext.Session.GetString(SD.SessionKey));
 
 		if (response != null && response.IsSuccess)
 		{

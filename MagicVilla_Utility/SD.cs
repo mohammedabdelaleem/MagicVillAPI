@@ -15,4 +15,6 @@ public static class SD
 		PUT,
 		DELETE
 	}
+
+	public readonly static string SessionKey = "JwtToken";
 }

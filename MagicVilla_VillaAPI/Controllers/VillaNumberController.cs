@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -76,6 +77,9 @@ public class VillaNumberController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status201Created)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status403Forbidden)]
+	[Authorize(Roles = "admin")]
 	public async Task<ActionResult<ApiResponse>> Add([FromBody] VillaNumberCreateDTO villaNumberRequest, CancellationToken cancellationToken = default)
 	{
 		try
@@ -115,6 +119,9 @@ public class VillaNumberController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status403Forbidden)]
+	[Authorize(Roles = "admin")]
 	public async Task<ActionResult<ApiResponse>> DeleteVilla(int villaNo, CancellationToken cancellationToken = default)
 	{
 		try
@@ -150,6 +157,9 @@ public class VillaNumberController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status403Forbidden)]
+	[Authorize(Roles = "admin")]
 	public async Task<ActionResult<ApiResponse>> UpdateVilla(int villaNo, [FromBody] VillaNumberUpdateDTO villaRequest, CancellationToken cancellationToken = default)
 	{
 		try
@@ -196,6 +206,9 @@ public class VillaNumberController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
+	[ProducesResponseType(StatusCodes.Status401Unauthorized)]
+	[ProducesResponseType(StatusCodes.Status403Forbidden)]
+	[Authorize(Roles = "admin")]
 	public async Task<ActionResult<ApiResponse>> UpdatePartialVilla(int villaNo, [FromBody] JsonPatchDocument<VillaNumberUpdateDTO> patchDTO, CancellationToken cancellationToken = default)
 	{
 		try
