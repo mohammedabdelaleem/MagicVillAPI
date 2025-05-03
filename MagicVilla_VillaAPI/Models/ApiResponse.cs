@@ -5,6 +5,13 @@ namespace MagicVilla_VillaAPI.Models;
 // Standerize Respons
 public class ApiResponse
 {
+	public ApiResponse()
+	{
+		StatusCode = default;
+		IsSuccess = default;
+		ErrorMessages = new();
+		Result = new();
+	}
 	public ApiResponse(HttpStatusCode statusCode,
 		object result= null, bool isSuccess= true, List<string> errorMessages = null)
 	{
