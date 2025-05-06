@@ -106,7 +106,7 @@ public class UserRepository : IUserRepository
 		// Add the user to the database (but changes are not saved here)
 		await _context.Users.AddAsync(user, cancellationToken);
 
-		await _context.SaveChangesAsync(cancellationToken); // we need to save now , because outside password be empty
+		await _context.SaveChangesAsync(cancellationToken); // we need to save now , because outside password be empty , I think We Can Add AsNoTracking On Password , But let it now
 
 		// For safety: don't return the password to the client
 		user.Password = string.Empty;

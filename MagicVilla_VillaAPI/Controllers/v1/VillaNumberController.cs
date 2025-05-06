@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace MagicVilla_VillaAPI.Controllers;
-[Route("api/[controller]")]
+namespace MagicVilla_VillaAPI.Controllers.v1;
+[Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
+[ApiVersion("1.0")]
+
 public class VillaNumberController : ControllerBase
 {
 	private ApiResponse _response;
@@ -45,6 +47,10 @@ public class VillaNumberController : ControllerBase
 	}
 
 
+
+
+
+	//[MapToApiVersion("1.0")]
 	[HttpGet("{villaNo:int}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -72,6 +78,7 @@ public class VillaNumberController : ControllerBase
 			return _response;
 		}
 	}
+
 
 	[HttpPost]
 	[ProducesResponseType(StatusCodes.Status201Created)]

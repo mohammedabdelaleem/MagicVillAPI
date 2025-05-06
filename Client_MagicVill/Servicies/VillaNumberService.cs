@@ -1,4 +1,5 @@
 ﻿using Client_MagicVill.Models;
+using MagicVilla_Utility;
 
 namespace Client_MagicVill.Servicies;
 
@@ -6,11 +7,13 @@ public class VillaNumberService : BaseService, IVillaNumberService
 {
 	private readonly IHttpClientFactory _httpClient;
 	private string villaNumberApi;
+	private string version;
 
 	public VillaNumberService(IHttpClientFactory httpClient, IConfiguration configuration, ILogger<BaseService> logger) : base(httpClient,logger)
 	{
 		_httpClient = httpClient;
 		villaNumberApi = configuration.GetValue<string>("UrlServices:villaApi")!;
+		version = SD.Version;
 	}
 
 	public Task<T> CreateAsync<T>(VillaNumberCreateDTO dto, string token)
@@ -19,7 +22,7 @@ public class VillaNumberService : BaseService, IVillaNumberService
 			new ApiRequest
 			{
 				ApiType = ApiType.POST,
-				Url = villaNumberApi + "/api/villaNumber",
+				Url = villaNumberApi + $"/api/{version}/villaNumber",
 				Data = dto,
 				Token = token
 			}
@@ -31,7 +34,7 @@ public class VillaNumberService : BaseService, IVillaNumberService
 		new ApiRequest
 		{
 			ApiType = ApiType.DELETE,
-			Url = villaNumberApi + "/api/villaNumber/"+id,
+			Url = villaNumberApi + $"/api/{version}/villaNumber/"+id,
 			Token = token
 		}
 		);
@@ -42,7 +45,7 @@ public class VillaNumberService : BaseService, IVillaNumberService
 			new ApiRequest
 			{
 				ApiType = ApiType.GET,
-				Url = villaNumberApi + "/api/villaNumber/all",
+				Url = villaNumberApi + $"/api/{version}/villaNumber/all",
 				Token = token
 			}
 			);
@@ -53,7 +56,7 @@ public class VillaNumberService : BaseService, IVillaNumberService
 		new ApiRequest
 		{
 			ApiType = ApiType.GET,
-			Url = villaNumberApi + "/api/villaNumber/"+id,
+			Url = villaNumberApi + $"/api/{version}/villaNumber/" +id,
 			Token = token
 		}
 		);
@@ -64,7 +67,7 @@ public class VillaNumberService : BaseService, IVillaNumberService
 		new ApiRequest
 		{
 			ApiType = ApiType.PUT,
-			Url = villaNumberApi + "/api/villaNumber/"+dto.VillaNo,
+			Url = villaNumberApi + $"/api/{version}/villaNumber/" +dto.VillaNo,
 			Data = dto,
 			Token = token
 		}

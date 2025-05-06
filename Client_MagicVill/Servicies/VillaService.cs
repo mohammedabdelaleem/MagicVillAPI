@@ -1,4 +1,5 @@
 ﻿using Client_MagicVill.Models;
+using MagicVilla_Utility;
 
 namespace Client_MagicVill.Servicies;
 
@@ -6,11 +7,13 @@ public class VillaService : BaseService, IVillaService
 {
 	private readonly IHttpClientFactory _httpClient;
 	private string villaApi;
+	private string version;
 
 	public VillaService(IHttpClientFactory httpClient, IConfiguration configuration, ILogger<BaseService> logger) : base(httpClient,logger)
 	{
 		_httpClient = httpClient;
 		villaApi = configuration.GetValue<string>("UrlServices:VillaApi")!;
+		version = SD.Version;
 	}
 
 	public Task<T> CreateAsync<T>(VillaCreateDTO dto, string token)
@@ -19,7 +22,7 @@ public class VillaService : BaseService, IVillaService
 			new ApiRequest
 			{
 				ApiType = ApiType.POST,
-				Url = villaApi + "/api/VillaAPI",
+				Url = villaApi + $"/api/{version}/VillaAPI",
 				Data = dto,
 				Token = token
 			}
@@ -32,7 +35,7 @@ public class VillaService : BaseService, IVillaService
 		new ApiRequest
 		{
 			ApiType = ApiType.DELETE,
-			Url = villaApi + "/api/VillaAPI/"+id,
+			Url = villaApi + $"/api/{version}/VillaAPI/" + id,
 			Token = token
 		}
 		);
@@ -44,7 +47,7 @@ public class VillaService : BaseService, IVillaService
 			new ApiRequest
 			{
 				ApiType = ApiType.GET,
-				Url = villaApi + "/api/VillaAPI/all",
+				Url = villaApi + $"/api/{version}/VillaAPI/all",
 				Token = token
 			}
 			);
@@ -56,7 +59,7 @@ public class VillaService : BaseService, IVillaService
 		new ApiRequest
 		{
 			ApiType = ApiType.GET,
-			Url = villaApi + "/api/VillaAPI/"+id,
+			Url = villaApi + $"/api/{version}/VillaAPI/" + id,
 			Token = token
 		}
 		);
@@ -68,7 +71,7 @@ public class VillaService : BaseService, IVillaService
 		new ApiRequest
 		{
 			ApiType = ApiType.PUT,
-			Url = villaApi + "/api/VillaAPI/"+dto.Id,
+			Url = villaApi + $"/api/{version}/VillaAPI/" + dto.Id,
 			Data = dto,
 			Token = token
 		}

@@ -109,7 +109,6 @@ public class VillaController : Controller
 		{
 			VillaDTO model = JsonConvert.DeserializeObject<VillaDTO>(Convert.ToString(response.Result));
 			return View(model);
-
 		}
 
 		return NotFound();
@@ -134,6 +133,4 @@ public class VillaController : Controller
 		return View(model);
 
 	}
-
-
 }

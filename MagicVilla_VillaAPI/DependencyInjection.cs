@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -57,6 +59,58 @@ public static class DependencyInjection
 					ValidateAudience = false
 				};
 			}); ;
+
+
+		// swager and versioning cofig
+		services.AddSwaggerGen(options =>
+		{
+			options.SwaggerDoc("v1", new OpenApiInfo
+			{
+				Version = "v1.0",
+				Title = "Magic Villa V1",
+				Description = "API to manage Villa",
+				TermsOfService = new Uri("https://example.com/terms"),
+				Contact = new OpenApiContact
+				{
+					Name = "Dotnetmastery",
+					Url = new Uri("https://dotnetmastery.com")
+				},
+				License = new OpenApiLicense
+				{
+					Name = "Example License",
+					Url = new Uri("https://example.com/license")
+				}
+			});
+			options.SwaggerDoc("v2", new OpenApiInfo
+			{
+				Version = "v2.0",
+				Title = "Magic Villa V2",
+				Description = "API to manage Villa",
+				TermsOfService = new Uri("https://example.com/terms"),
+				Contact = new OpenApiContact
+				{
+					Name = "Dotnetmastery",
+					Url = new Uri("https://dotnetmastery.com")
+				},
+				License = new OpenApiLicense
+				{
+					Name = "Example License",
+					Url = new Uri("https://example.com/license")
+				}
+			});
+		});
+		services.AddApiVersioning(options =>
+		{
+			options.AssumeDefaultVersionWhenUnspecified = true;
+			options.DefaultApiVersion = new ApiVersion(1, 0);
+			options.ReportApiVersions = true;
+		});
+
+		services.AddVersionedApiExplorer(options =>
+		{
+			options.GroupNameFormat = "'v'VVV";
+			options.SubstituteApiVersionInUrl = true;
+		});
 
 
 		return services;

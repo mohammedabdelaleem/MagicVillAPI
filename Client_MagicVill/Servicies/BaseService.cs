@@ -110,8 +110,9 @@ public class BaseService : IBaseService
 			{
 				ApiResponse response = JsonConvert.DeserializeObject<ApiResponse>(apiContent);
 
-				if(apiResponse.StatusCode == HttpStatusCode.BadRequest || 
-					apiResponse.StatusCode == HttpStatusCode.NotFound)
+				if(response !=null &&
+					(apiResponse.StatusCode == HttpStatusCode.BadRequest || 
+					apiResponse.StatusCode == HttpStatusCode.NotFound))
 				{
 					response.StatusCode = HttpStatusCode.BadRequest;
 					response.IsSuccess = false;

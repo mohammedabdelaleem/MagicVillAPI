@@ -33,7 +33,7 @@ public class AuthController : Controller
 			LoginResponsDTO model = JsonConvert.DeserializeObject<LoginResponsDTO>(Convert.ToString(response.Result));
 			
 			// Now We Have A Token ====> Means User Is Logged In 
-			// problem , when 
+			// problem , when we we logged in but HttpContext doesn't Know That => at some pages we redirect us to the login page for login even if we are
 			// But We Need To Tell HttpContxt That It's Logged In 
 			var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
 			identity.AddClaim(new Claim(ClaimTypes.Name , model.User.Id.ToString()));
@@ -42,12 +42,13 @@ public class AuthController : Controller
 			var principal = new ClaimsPrincipal(identity);
 			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
+
 			HttpContext.Session.SetString(SD.SessionKey, model.Token);
 			return RedirectToAction("Index", "Home");
 		}
 		else
 		{
-			ModelState.AddModelError("ErrorMessage", response.ErrorMessages.FirstOrDefault());
+			ModelState.AddModelError("ErrorMessage", string.Join(",", response.ErrorMessages)); ///// join 
 			return View(request);
 		}
 	}
@@ -69,7 +70,7 @@ public class AuthController : Controller
 			return RedirectToAction(nameof(Login));
 		}
 
-		return View();
+		return View(request);
 	}
 
 

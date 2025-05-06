@@ -1,24 +1,25 @@
 ﻿	using Microsoft.AspNetCore.Mvc;
 
 	namespace MagicVilla_VillaAPI.Controllers;
-	[Route("auth/[controller]")]
+	[Route("auth/v{version:apiVersion}/[controller]")]
 	[ApiController]
+	[ApiVersionNeutral]
 	public class UsersController : ControllerBase
 	{
 		private readonly IUserRepository _userRepository;
-		private readonly IUnitOfWork _unitOfWork;
+		//private readonly IUnitOfWork _unitOfWork;
 		protected ApiResponse _response;
 		public UsersController(IUserRepository userRepository, IUnitOfWork unitOfWork)
 		{
 			_userRepository = userRepository;
-			_unitOfWork = unitOfWork;
+			//_unitOfWork = unitOfWork;
 			_response = new();
 		}
 
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] LoginRequestDTO request, CancellationToken cancellationToken=default)
 		{
-			LoginResponsDTO loginResponse = 	await _userRepository.Login(request, cancellationToken);
+			LoginResponsDTO loginResponse = await _userRepository.Login(request, cancellationToken);
 
 			if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
 			{

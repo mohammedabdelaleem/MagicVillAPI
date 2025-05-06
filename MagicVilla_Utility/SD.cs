@@ -17,4 +17,6 @@ public static class SD
 	}
 
 	public readonly static string SessionKey = "JwtToken";
+	public readonly static string Version = "v1";
+
 }
