@@ -17,7 +17,7 @@ public class VillaNumberController : ControllerBase
 	private readonly IVillaRepository _villaRepository;
 
 	public VillaNumberController(IUnitOfWork unitOfWork,
-		ILogger<VillaNumberController> logger, 
+		ILogger<VillaNumberController> logger,
 		IVillaNumberRepository villaNumberRepository,
 		IVillaRepository villaRepository)
 	{
@@ -33,7 +33,7 @@ public class VillaNumberController : ControllerBase
 	{
 		try
 		{
-			var villas = await _unitOfWork.VillaNumber.GetAllAsync(include:nameof(Villa) ,cancellationToken: cancellation);
+			var villas = await _unitOfWork.VillaNumber.GetAllAsync(include: nameof(Villa), cancellationToken: cancellation);
 
 			_response = new(statusCode: HttpStatusCode.OK, result: villas);
 
@@ -60,12 +60,20 @@ public class VillaNumberController : ControllerBase
 		try
 		{
 			if (villaNo <= 0)
-				return BadRequest(new { message = "Invalid ID. ID must be greater than zero." });
+			{           //return BadRequest(new { message = "Invalid ID. ID must be greater than zero." });
 
-			var villa = await _unitOfWork.VillaNumber.GetAsync(v => v.VillaNo == villaNo,  include: nameof(Villa), cancellationToken: cancellationToken);
+				_response = new(statusCode: HttpStatusCode.BadRequest, isSuccess: false);
+				return BadRequest(_response);
+			}
+
+			var villa = await _unitOfWork.VillaNumber.GetAsync(v => v.VillaNo == villaNo, include: nameof(Villa), cancellationToken: cancellationToken);
 
 			if (villa == null)
-				return NotFound(new { message = $"Villa with ID {villaNo} not found." });
+			{
+				//return NotFound(new { message = $"Villa with ID {villaNo} not found." });
+				_response = new(statusCode: HttpStatusCode.NotFound, isSuccess: false);
+				return NotFound(_response);
+			}
 
 
 			_response = new(statusCode: HttpStatusCode.OK, result: villa);
@@ -91,13 +99,13 @@ public class VillaNumberController : ControllerBase
 	{
 		try
 		{
-			if ( await _villaNumberRepository.IsExistsAsync(v=>v.VillaNo == villaNumberRequest.VillaNo))
+			if (await _villaNumberRepository.IsExistsAsync(v => v.VillaNo == villaNumberRequest.VillaNo))
 			{
 				ModelState.AddModelError("ErrorMessages", "Vill Number Already Found");
 				return BadRequest(ModelState);
 			}
 
-		
+
 
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -138,7 +146,7 @@ public class VillaNumberController : ControllerBase
 				ModelState.AddModelError("ErrorMessages", "Invalid Vill Number Id");
 				return BadRequest(ModelState);
 			}
-		
+
 			var exists = await _unitOfWork.VillaNumber.IsExistsAsync(v => v.VillaNo == villaNo, cancellationToken);
 			if (!exists)
 				return NotFound(new { message = $"Villa with ID {villaNo} not found." });
@@ -181,13 +189,13 @@ public class VillaNumberController : ControllerBase
 				return BadRequest(ModelState);
 			}
 
-			if (!await _villaNumberRepository.IsExistsAsync(v => v.VillaNo ==villaNo))
+			if (!await _villaNumberRepository.IsExistsAsync(v => v.VillaNo == villaNo))
 			{
 				ModelState.AddModelError("ErrorMessages", "Invalid Vill Nubmer Id");
 				return BadRequest(ModelState);
 			}
 
-		
+
 			var existing = await _unitOfWork.VillaNumber.GetAsync(v => v.VillaNo == villaNo, cancellationToken: cancellationToken);
 			if (existing == null)
 				return NotFound(new { message = $"Villa with ID {villaNo} not found." });

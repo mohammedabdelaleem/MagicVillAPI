@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 
 namespace MagicVilla_VillaAPI.Controllers.v1
@@ -21,17 +22,55 @@ namespace MagicVilla_VillaAPI.Controllers.v1
 		}
 
 
+
+		/*
+		 The [ResponseCache] attribute in ASP.NET Core 
+		 is used to control how the response from an action is cached by clients and intermediate
+		 proxies (like browsers or CDNs).
+		 
+		 Don't use with [HttpPost] – response caching only works with safe methods (e.g., GET).
+		 */
+
 		[HttpGet("all")]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
-		public async Task<ActionResult<ApiResponse>> GetAll(CancellationToken cancellation = default)
+		[ResponseCache(Duration = 30)]
+		public async Task<ActionResult<ApiResponse>> GetAll([FromQuery(Name = "filterOccupancy")] int? occupancy,
+			[FromQuery] string? search
+			, int pageSize = 0, int pageNumber = 1,
+			CancellationToken cancellation = default)
 		{
 			try
 			{
-				var villas = await _unitOfWork.Villa.GetAllAsync(cancellationToken: cancellation);
+				IEnumerable<Villa> villas;
 
-				_response = new(statusCode: HttpStatusCode.OK, result: villas);
+				// filter and search on your data
+				if (occupancy > 0)
+				{
+					villas = await _unitOfWork.Villa.GetAllAsync(v => v.Occupancy == occupancy
+					, pageSize: pageSize, pageNumber: pageNumber
+						, cancellationToken: cancellation);
+				}
+				else
+				{
+					villas = await _unitOfWork.Villa.GetAllAsync(cancellationToken: cancellation, pageSize: pageSize, pageNumber: pageNumber
+						);
+				}
+
+				if (!string.IsNullOrEmpty(search))
+				{
+					villas = villas.Where(v => v.Name.ToLower().Contains(search.ToLower()));
+				}
+
+				var pagination = new Pagination()
+				{
+					PageNumber = pageNumber,
+					PageSize = pageSize,
+				};
+
+				Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
+				_response = new(statusCode: HttpStatusCode.OK, result: villas.Adapt<List<VillaDTO>>());
 
 				return Ok(_response);
 			}
@@ -47,6 +86,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)] // every time you need to go to DB ===> No Caching
 		public async Task<ActionResult<ApiResponse>> Get(int id, CancellationToken cancellationToken = default)
 		{
 			try
@@ -78,7 +118,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
-		[Authorize(Roles ="admin")]
+		[Authorize(Roles = "admin")]
 		public async Task<ActionResult<ApiResponse>> Add([FromBody] VillaCreateDTO villaRequest, CancellationToken cancellationToken = default)
 		{
 			try

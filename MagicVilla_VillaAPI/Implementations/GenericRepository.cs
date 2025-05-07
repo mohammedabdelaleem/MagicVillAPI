@@ -33,12 +33,20 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
 		return true;
 	}
 
-	public async Task<List<T>?> GetAllAsync(Expression<Func<T, bool>>? filter = null, string include = "",CancellationToken cancellationToken = default)
+	public async Task<List<T>?> GetAllAsync(Expression<Func<T, bool>>? filter = null, string include = ""
+		, int pageSize = 0, int pageNumber = 1
+		, CancellationToken cancellationToken = default)
 	{
 		IQueryable<T> query = _dbSet.AsQueryable();
 
 		if (filter != null)
 			query = query.Where(filter);
+
+		if(pageSize > 0)
+		{
+			query = query.Skip(pageSize * (pageNumber-1)).Take(pageSize) ;
+		}
+
 
 		if (include != null && !string.IsNullOrWhiteSpace(include))
 		{

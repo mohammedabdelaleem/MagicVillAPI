@@ -13,8 +13,22 @@ public static class DependencyInjection
 
 	public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
 	{
+		//CacheProfile  ==> DRY
+		services.AddControllers(options =>
+		{
+			options.CacheProfiles.Add("Default30",
+				new CacheProfile()
+				{
+					Duration = 30
+				});
 
-		services.AddControllers()
+			options.CacheProfiles.Add("NoCache",
+				new CacheProfile()
+				{
+					Location = ResponseCacheLocation.None,
+					NoStore = true
+				});
+		})
 	.AddJsonOptions(options =>
 	{
 		options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
@@ -26,7 +40,8 @@ public static class DependencyInjection
 		services
 			.AddSwaggerConfig()
 			.AddDatabaseConfig(configuration)
-			.AddMapsterConfig();
+			.AddMapsterConfig()
+			.AddResponseCaching(); // cashing 
 
 
 		// adding service life time
