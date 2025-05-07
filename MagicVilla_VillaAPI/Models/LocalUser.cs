@@ -1,6 +1,8 @@
 ﻿namespace MagicVilla_VillaAPI.Models;
 
+// we are no longer need this model after identity
 public class LocalUser
+
 {
 	public int Id { get; set; }
 	public string UserName { get; set; }

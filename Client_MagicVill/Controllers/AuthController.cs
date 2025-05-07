@@ -1,8 +1,9 @@
-﻿	using MagicVilla_Utility;
+﻿using MagicVilla_Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace Client_MagicVill.Controllers;
@@ -31,13 +32,18 @@ public class AuthController : Controller
 		if (response != null && response.IsSuccess)
 		{
 			LoginResponsDTO model = JsonConvert.DeserializeObject<LoginResponsDTO>(Convert.ToString(response.Result));
-			
+
+			var handler = new JwtSecurityTokenHandler();
+			var jwt = handler.ReadJwtToken(model.Token);
+
+
+
 			// Now We Have A Token ====> Means User Is Logged In 
 			// problem , when we we logged in but HttpContext doesn't Know That => at some pages we redirect us to the login page for login even if we are
 			// But We Need To Tell HttpContxt That It's Logged In 
 			var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
-			identity.AddClaim(new Claim(ClaimTypes.Name , model.User.Id.ToString()));
-			identity.AddClaim(new Claim(ClaimTypes.Role , model.User.Role));
+			identity.AddClaim(new Claim(ClaimTypes.NameIdentifier , jwt.Claims.FirstOrDefault(c=>c.Type == "nameid").Value));
+			identity.AddClaim(new Claim(ClaimTypes.Role , jwt.Claims.FirstOrDefault(c => c.Type == "role").Value));
 
 			var principal = new ClaimsPrincipal(identity);
 			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);

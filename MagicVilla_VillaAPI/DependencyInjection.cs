@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -50,6 +51,11 @@ public static class DependencyInjection
 		services.AddScoped<IVillaNumberRepository, VillaNumberRepository>();
 		services.AddScoped<IUserRepository, UserRepository>();
 
+
+
+		// Identity
+		services.AddIdentity<ApplicationUser, IdentityRole>()
+			.AddEntityFrameworkStores<AppDbContext>();
 
 
 

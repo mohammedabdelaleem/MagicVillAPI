@@ -35,7 +35,7 @@ public class AuthService : BaseService, IAuthService
 	new ApiRequest
 	{
 		ApiType = ApiType.POST,
-		Url = villaApi + $"/auth/{version}/register",
+		Url = villaApi + $"/auth/{version}/Users/register",
 		Data = obj
 	}
 	);
