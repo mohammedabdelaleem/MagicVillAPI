@@ -4,23 +4,36 @@
     <div class="row justify-content-center">
         <div class="col-md-6">
             <form asp-action="Register" asp-controller="Auth" class="card p-4 shadow-sm">
-                <div asp-validation-summary="All"></div>
                 <h1 class="form-header text-center mb-4">Register</h1>
+                <div asp-validation-summary="All" class="text-danger my-3 fw-bold"></div>
 
                 <div class="mb-3">
                     <label asp-for="Name" class="form-label"></label>
                     <input asp-for="Name" class="form-control" placeholder="Name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
                     <label asp-for="UserName" class="form-label"></label>
                     <input asp-for="UserName" class="form-control" placeholder="Username" />
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+
                 </div>
 
                 <div class="mb-3">
                     <label asp-for="Password" class="form-label"></label>
                     <input asp-for="Password" class="form-control" placeholder="Password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+
                 </div>
+
+                <div class="mb-3">
+                    <label asp-for="Role" class="form-label"></label>
+                    <select asp-for="Role" asp-items="@ViewBag.Roles" class="form-select">
+                        <option disabled selected hidden>--Select Role--</option>
+                    </select>
+
+                 </div>
 
                 <div class="d-grid mt-2">
                     <input type="submit" value="Register" class="btn btn-success" />

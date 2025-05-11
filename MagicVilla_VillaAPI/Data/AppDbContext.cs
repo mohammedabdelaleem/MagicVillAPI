@@ -12,6 +12,13 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 	public DbSet<VillaNumber> VillaNumbers { get; set; }
 
 
+	protected override void OnModelCreating(ModelBuilder builder)
+	{
 
+
+
+
+		base.OnModelCreating(builder);
+	}
 
 }

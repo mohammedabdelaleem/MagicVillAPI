@@ -13,7 +13,7 @@ public class AuthService : BaseService, IAuthService
 	{
 		_httpClient = httpClient;
 		villaApi = configuration.GetValue<string>("UrlServices:VillaApi")!;
-		version = SD.Version;
+		version = SD.CurrentApiVersion;
 
 	}
 

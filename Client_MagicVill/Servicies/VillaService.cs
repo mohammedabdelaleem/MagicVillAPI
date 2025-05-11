@@ -13,7 +13,7 @@ public class VillaService : BaseService, IVillaService
 	{
 		_httpClient = httpClient;
 		villaApi = configuration.GetValue<string>("UrlServices:VillaApi")!;
-		version = SD.Version;
+		version = SD.CurrentApiVersion;
 	}
 
 	public Task<T> CreateAsync<T>(VillaCreateDTO dto, string token)

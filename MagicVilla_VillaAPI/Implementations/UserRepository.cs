@@ -85,6 +85,7 @@ public class UserRepository : IUserRepository
 		var claims = new List<Claim>
 		{
 			new Claim(ClaimTypes.NameIdentifier, user.Id),       // user ID as Name claim
+			new Claim(ClaimTypes.Name, user.UserName)
 		};
 
 		claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -129,15 +130,14 @@ public class UserRepository : IUserRepository
 
 				// adding role here : this is for testing 
 				/////////////////////
-				if (!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
+				if (!_roleManager.RoleExistsAsync(request.Role).GetAwaiter().GetResult())
 				{
-					await _roleManager.CreateAsync(new IdentityRole("admin"));
-					await _roleManager.CreateAsync(new IdentityRole("customer"));
+					await _roleManager.CreateAsync(new IdentityRole(request.Role));
 				}
 				/////////////////////////
 
 				// adding role ==> But don't forget to create it first 
-				await _userManager.AddToRoleAsync(user, "admin"); // hardcoded now
+				await _userManager.AddToRoleAsync(user, request.Role); // hardcoded now
 
 				var userToRetuen = await GetAsync(request.UserName.ToLower(), cancellationToken);	
 			

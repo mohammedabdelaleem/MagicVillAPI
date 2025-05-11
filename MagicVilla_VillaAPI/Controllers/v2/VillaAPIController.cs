@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 
-namespace MagicVilla_VillaAPI.Controllers.v1
+namespace MagicVilla_VillaAPI.Controllers.v2
 {
 	[Route("api/v{version:apiVersion}/[controller]")]
 	[ApiController]
-	[ApiVersion("1.0")] // in second version i need to enhance the functionality => user can upload villa image from web project and then save it using api
+	[ApiVersion("2.0")]
 	public class VillaAPIController : ControllerBase
 	{
 		private ApiResponse _response;
