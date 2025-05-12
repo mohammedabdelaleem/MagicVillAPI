@@ -2,7 +2,7 @@
 
 @model IEnumerable<VillaDTO>
 
-<img class="d-block w-100" src="images/home/slide1.jpg" alt="">
+<img class="d-block w-100" src="images/home/slide1.jpg" asp-append-version="true" alt="">
 
 <hr />
 <div class="row" style="--bs-gutter-x:0">
@@ -11,7 +11,7 @@
         <div class="p-4 col-md-12 col-lg-6">
             <div class="row" style="border-radius:20px; border: 1px solid #ffffff;padding-top: 8px;">
                 <div class="col-4">
-                    <img class="d-block w-100" style="border-radius:20px;" src="@villa.ImgUrl" alt="First slide">
+                    <img class="d-block w-100" style="border-radius:20px;" asp-append-version="true" src="@villa.ImgUrl" alt="First slide">
                 </div>
                 <div class="col-8">
                     <p class="card-title text-warning" style="font-size:xx-large">@villa.Name</p>

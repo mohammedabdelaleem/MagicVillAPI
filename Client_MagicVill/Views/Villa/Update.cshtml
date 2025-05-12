@@ -1,57 +1,91 @@
 ﻿@model VillaUpdateDTO
 
-<form asp-action="Update" asp-controller="Villa" class="container mt-4">
+<form asp-action="Update" asp-controller="Villa" enctype="multipart/form-data" class="container mt-4">
+  
+    <br />
+    <div class="container border p-3">
+
+        <h1 class="text-primary">Update Villa</h1>
+        <hr />
+
+   
     <div asp-validation-summary="All" class="@(ViewData.ModelState.IsValid ? "" : "alert alert-danger")"></div>
 
+
     <input hidden asp-for="Id" />
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
 
-    <div class="mb-3">
-        <label asp-for="Details" class="form-label"></label>
-        <textarea asp-for="Details" class="form-control" rows="4"></textarea>
-        <span asp-validation-for="Details" class="text-danger"></span>
-    </div>
+    <div class="row">
 
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label asp-for="Rate" class="form-label"></label>
-            <input asp-for="Rate" class="form-control" />
-            <span asp-validation-for="Rate" class="text-danger"></span>
+        <div class="col-10">
+
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Details" class="form-label"></label>
+                    <textarea asp-for="Details" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Details" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Rate" class="form-label"></label>
+                        <input asp-for="Rate" class="form-control" />
+                        <span asp-validation-for="Rate" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="SqFt" class="form-label"></label>
+                        <input asp-for="SqFt" class="form-control" />
+                        <span asp-validation-for="SqFt" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Occupancy" class="form-label"></label>
+                        <input asp-for="Occupancy" class="form-control" />
+                        <span asp-validation-for="Occupancy" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ImgUrl" class="form-label"></label>
+
+                        <input asp-for="Image" class="form-control" />
+                        <input asp-for="ImgUrl" hidden class="form-control" />
+                        <input asp-for="ImageLocalPath" hidden class="form-control" />
+
+                        <span asp-validation-for="Image" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Amenity" class="form-label"></label>
+                    <textarea asp-for="Amenity" class="form-control" rows="4"></textarea>
+                    <span asp-validation-for="Amenity" class="text-danger"></span>
+                </div>
+
+
+                <div class="d-flex justify-content-between w-25">
+                    <a asp-action="Index" class="btn btn-secondary">Back To List</a>
+                    <input type="submit" class="btn btn-primary" value="Save" />
+                </div>
+
         </div>
-        <div class="col-md-6">
-            <label asp-for="SqFt" class="form-label"></label>
-            <input asp-for="SqFt" class="form-control" />
-            <span asp-validation-for="SqFt" class="text-danger"></span>
-        </div>
+
+            <div class="col-2"> 
+                <img  class="w-100" asp-append-version="true" src="@Model.ImgUrl" alt="" />
+            </div>
+
     </div>
 
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label asp-for="Occupancy" class="form-label"></label>
-            <input asp-for="Occupancy" class="form-control" />
-            <span asp-validation-for="Occupancy" class="text-danger"></span>
-        </div>
-        <div class="col-md-6">
-            <label asp-for="ImgUrl" class="form-label"></label>
-            <input asp-for="ImgUrl" class="form-control" />
-            <span asp-validation-for="ImgUrl" class="text-danger"></span>
-        </div>
-    </div>
 
-    <div class="mb-3">
-        <label asp-for="Amenity" class="form-label"></label>
-        <textarea asp-for="Amenity" class="form-control" rows="4"></textarea>
-        <span asp-validation-for="Amenity" class="text-danger"></span>
-    </div>
 
-    <div class="d-flex justify-content-between">
-        <a asp-action="Index" class="btn btn-secondary">Back To List</a>
-        <input type="submit" class="btn btn-primary" value="Save" />
-    </div>
+    
+
+
+  </div>
 </form>
 
 @section Scripts {

@@ -7,4 +7,5 @@ public class ApiRequest
 	public string Url { get; set; }
 	public object Data { get; set; } // Post , Put 
 	public string  Token { get; set; } // passing the token from front to back
+	public ContentType ContentType { get; set; } = ContentType.Json;
 }

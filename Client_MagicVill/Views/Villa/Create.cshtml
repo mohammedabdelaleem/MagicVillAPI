@@ -1,7 +1,13 @@
 ﻿
 @model VillaCreateDTO
 
-<form asp-action="Create" asp-controller="Villa" class="container mt-4">
+<form asp-action="Create" asp-controller="Villa" enctype="multipart/form-data" class="container mt-4" >
+      <br />
+    <div class="container border p-3">
+
+        <h1 class="text-primary">Add New Villa</h1>
+        <hr />
+
     <div asp-validation-summary="All" class="@(ViewData.ModelState.IsValid ? "" : "alert alert-danger")"></div>
 
     <div class="mb-3">
@@ -36,9 +42,11 @@
             <span asp-validation-for="Occupancy" class="text-danger"></span>
         </div>
         <div class="col-md-6">
+
             <label asp-for="ImgUrl" class="form-label"></label>
-            <input asp-for="ImgUrl" class="form-control" />
-            <span asp-validation-for="ImgUrl" class="text-danger"></span>
+            <input asp-for="Image" class="form-control" />
+            <input asp-for="ImgUrl" hidden class="form-control" />
+                <span asp-validation-for="Image" class="text-danger"></span>
         </div>
     </div>
 
@@ -48,9 +56,10 @@
         <span asp-validation-for="Amenity" class="text-danger"></span>
     </div>
 
-    <div class="d-flex justify-content-between">
+    <div class="d-flex justify-content-between " style="width:19%">
         <a asp-action="Index" class="btn btn-secondary">Back To List</a>
         <input type="submit" class="btn btn-primary" value="Save" />
+    </div>
     </div>
 </form>
 

@@ -19,7 +19,8 @@ public record VillaCreateDTO
 
 
 	[Display(Name = "Image Url")]
-	public string ImgUrl { get; set; }
+	public string? ImgUrl { get; set; }
+	public IFormFile? Image { get; set; } // we need the file itself , and this will be at the IFormFile ,, and this is how the web project will passing the image down to the Api proect 
 
 	public string Amenity { get; set; }
 

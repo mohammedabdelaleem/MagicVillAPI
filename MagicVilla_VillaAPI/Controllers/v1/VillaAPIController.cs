@@ -202,7 +202,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
 
 				villaRequest.Adapt(existing);
 
-				await _unitOfWork.Villa.Update(id, existing, cancellationToken);
+				await _unitOfWork.Villa.UpdateAsync(id, existing, cancellationToken);
 
 				if (await _unitOfWork.CompleteAsync(cancellationToken) <= 0)
 					return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Update failed. Please try again later." });
@@ -245,7 +245,7 @@ namespace MagicVilla_VillaAPI.Controllers.v1
 
 				villaToPatch.Adapt(villa); // map back to the tracked entity
 
-				await _unitOfWork.Villa.Update(id, villa, cancellationToken);
+				await _unitOfWork.Villa.UpdateAsync(id, villa, cancellationToken);
 				if (await _unitOfWork.CompleteAsync(cancellationToken) <= 0)
 					return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Partial update failed." });
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
@@ -119,23 +120,58 @@ namespace MagicVilla_VillaAPI.Controllers.v2
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		[Authorize(Roles = "admin")]
-		public async Task<ActionResult<ApiResponse>> Add([FromBody] VillaCreateDTO villaRequest, CancellationToken cancellationToken = default)
+		public async Task<ActionResult<ApiResponse>> Add([FromForm] VillaCreateDTO createDTO, CancellationToken cancellationToken = default) //[FromForm] that means that my api will accept IFormFile
 		{
 			try
 			{
 				if (!ModelState.IsValid)
 					return BadRequest(ModelState);
 
-				var createdVilla = await _unitOfWork.Villa.AddAsync(villaRequest.Adapt<Villa>(), cancellationToken);
+				var createdVilla = await _unitOfWork.Villa.AddAsync(createDTO.Adapt<Villa>(), cancellationToken);
 
 				if (createdVilla == null)
 					return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Failed to create villa." });
 
 				if (await _unitOfWork.CompleteAsync(cancellationToken) > 0)
-					_logger.LogInformation("Villa created successfully. ID: {Id}, Time: {Time}", createdVilla.Id, DateTime.UtcNow);
+				{
+				//	_logger.LogInformation("Villa created successfully. ID: {Id}, Time: {Time}",
+				//		createdVilla.Id, DateTime.UtcNow);
+
+					if (createDTO.Image != null)
+					{
+						var fileName = createdVilla.Id + Path.GetExtension(createDTO.Image.FileName);
+						var filePath = @"wwwroot\ProductImage\" + fileName;
+
+						var directoryLocation = Path.Combine(Directory.GetCurrentDirectory(), filePath); // we can comment this because the wwwroot is the root directory itself
+				
+						FileInfo file = new FileInfo(directoryLocation);
+						if
+							(file.Exists)
+						{
+							file.Delete();
+						}
+
+						using (var fileStream = new FileStream(directoryLocation, FileMode.Create))
+						{
+							createDTO.Image.CopyTo(fileStream);	
+						}
 
 
-				_response = new(statusCode: HttpStatusCode.Created, result: createdVilla);
+						var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+						createdVilla.ImgUrl = baseUrl+"/ProductImage/"+fileName;
+						createdVilla.ImageLocalPath = filePath;
+					}
+					else
+					{
+						createdVilla.ImgUrl = "https://placehold.co/600x405";
+					}
+				}
+
+			await _unitOfWork.Villa.UpdateAsync(createdVilla.Id,createdVilla, cancellationToken);
+		    await _unitOfWork.CompleteAsync(cancellationToken);
+
+
+				_response = new(statusCode: HttpStatusCode.Created, result: createdVilla.Adapt<VillaDTO>());
 				return CreatedAtAction(nameof(Get), new { id = createdVilla.Id }, _response);
 
 			}
@@ -161,9 +197,25 @@ namespace MagicVilla_VillaAPI.Controllers.v2
 				if (id <= 0)
 					return BadRequest(new { message = "Invalid ID. ID must be greater than zero." });
 
-				var exists = await _unitOfWork.Villa.IsExistsAsync(v => v.Id == id, cancellationToken);
-				if (!exists)
+				var villa = await _unitOfWork.Villa.GetAsync(v => v.Id == id,cancellationToken:cancellationToken);
+				if (villa ==null)
 					return NotFound(new { message = $"Villa with ID {id} not found." });
+
+
+
+
+				if (!string.IsNullOrEmpty(villa.ImageLocalPath))
+				{
+					var oldFilePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), villa.ImageLocalPath);
+
+					FileInfo file = new FileInfo(oldFilePathDirectory);
+					if (file.Exists)
+					{
+						file.Delete();
+					}
+
+				}
+
 
 				await _unitOfWork.Villa.DeleteAsync(id, cancellationToken);
 
@@ -189,20 +241,62 @@ namespace MagicVilla_VillaAPI.Controllers.v2
 		[ProducesResponseType(StatusCodes.Status401Unauthorized)]
 		[ProducesResponseType(StatusCodes.Status403Forbidden)]
 		[Authorize(Roles = "admin")]
-		public async Task<ActionResult<ApiResponse>> UpdateVilla(/*[FromQuery]*/int id, [FromBody] VillaUpdateDTO villaRequest, CancellationToken cancellationToken = default)
+		public async Task<ActionResult<ApiResponse>> UpdateVilla(/*[FromQuery]*/int id, [FromForm] VillaUpdateDTO updateDto, CancellationToken cancellationToken = default)
 		{
 			try
 			{
-				if (id != villaRequest.Id)
+				if (id != updateDto.Id)
 					return BadRequest(new { message = "ID mismatch between route and payload." });
 
-				var existing = await _unitOfWork.Villa.GetAsync(v => v.Id == id, cancellationToken: cancellationToken);
-				if (existing == null)
-					return NotFound(new { message = $"Villa with ID {id} not found." });
+				//var existing = await _unitOfWork.Villa.GetAsync(v => v.Id == id, cancellationToken: cancellationToken);
+				//if (existing == null)
+				//	return NotFound(new { message = $"Villa with ID {id} not found." });
 
-				villaRequest.Adapt(existing);
+				Villa model = updateDto.Adapt<Villa>();
+				updateDto.Adapt(model);
 
-				await _unitOfWork.Villa.Update(id, existing, cancellationToken);
+
+
+				if (updateDto.Image != null)
+				{
+
+					if(!string.IsNullOrEmpty(model.ImageLocalPath))
+					{
+						var oldFilePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), model.ImageLocalPath);
+
+						FileInfo file = new FileInfo(oldFilePathDirectory);
+						if(file.Exists)
+						{
+							file.Delete();
+						}
+
+					}
+
+					// upload new image 
+					var fileName = updateDto.Id + Path.GetExtension(updateDto.Image.FileName);
+					var filePath = @"wwwroot\ProductImage\" + fileName;
+
+					var directoryLocation = Path.Combine(Directory.GetCurrentDirectory(), filePath); // we can comment this because the wwwroot is the root directory itself
+
+					
+					using (var fileStream = new FileStream(directoryLocation, FileMode.Create))
+					{
+						updateDto.Image.CopyTo(fileStream);
+					}
+
+
+					var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+					model.ImgUrl = baseUrl + "/ProductImage/" + fileName;
+					model.ImageLocalPath = filePath;
+				}
+				else
+				{
+					model.ImgUrl = "https://placehold.co/600x405";
+				}
+
+
+
+				await _unitOfWork.Villa.UpdateAsync(id, model, cancellationToken);
 
 				if (await _unitOfWork.CompleteAsync(cancellationToken) <= 0)
 					return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Update failed. Please try again later." });
@@ -245,7 +339,7 @@ namespace MagicVilla_VillaAPI.Controllers.v2
 
 				villaToPatch.Adapt(villa); // map back to the tracked entity
 
-				await _unitOfWork.Villa.Update(id, villa, cancellationToken);
+				await _unitOfWork.Villa.UpdateAsync(id, villa, cancellationToken);
 				if (await _unitOfWork.CompleteAsync(cancellationToken) <= 0)
 					return StatusCode(StatusCodes.Status500InternalServerError, new { message = "Partial update failed." });
 

@@ -10,7 +10,7 @@ public class VillaRepository : GenericRepository<Villa>, IVillaRepository
 		_context = context;
 	}
 
-	public async Task<bool> Update(int id ,Villa updatedVilla, CancellationToken cancellationToken=default)
+	public async Task<bool> UpdateAsync(int id ,Villa updatedVilla, CancellationToken cancellationToken=default)
 	{
 		
 

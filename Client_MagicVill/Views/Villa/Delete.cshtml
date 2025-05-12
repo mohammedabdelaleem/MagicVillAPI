@@ -1,51 +1,65 @@
 ﻿@model VillaDTO
 
-<form asp-action="Delete" asp-controller="Villa" class="container mt-4">
+<form asp-action="Delete" asp-controller="Villa"  class="container mt-4">
     @* <div asp-validation-summary="All" class="alert alert-danger"></div> *@
     <div asp-validation-summary="All" class="@(ViewData.ModelState.IsValid ? "" : "alert alert-danger")"></div>
 
     <input hidden asp-for="Id" />
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" disabled class="form-control" />
-    </div>
 
-    <div class="mb-3">
-        <label asp-for="Details" class="form-label"></label>
-        <textarea asp-for="Details" disabled  class="form-control" rows="4"></textarea>
-    </div>
 
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label asp-for="Rate" class="form-label"></label>
-            <input asp-for="Rate" disabled class="form-control" />
+    <div class="row">
+        <div class="col-9">
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" disabled class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Details" class="form-label"></label>
+                <textarea asp-for="Details" disabled class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Rate" class="form-label"></label>
+                    <input asp-for="Rate" disabled class="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="SqFt" class="form-label"></label>
+                    <input asp-for="SqFt" disabledclass="form-control" />
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label asp-for="Occupancy" class="form-label"></label>
+                    <input asp-for="Occupancy" disabledclass="form-control" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="ImgUrl" class="form-label"></label>
+                    <input asp-for="ImgUrl" disabled class="form-control" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Amenity" class="form-label"></label>
+                <textarea asp-for="Amenity" disabled class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-secondary">Back To List</a>
+                <input type="submit" class="btn btn-danger" value="Delete" />
+            </div>
         </div>
-        <div class="col-md-6">
-            <label asp-for="SqFt" class="form-label"></label>
-            <input asp-for="SqFt" disabledclass="form-control" />
+
+        <div class="col-3">
+            <img src="@Model.ImgUrl" class="w-100" asp-append-version="true" alt="" />
         </div>
+
     </div>
 
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label asp-for="Occupancy" class="form-label"></label>
-            <input asp-for="Occupancy"  disabledclass="form-control" />
-        </div>
-        <div class="col-md-6">
-            <label asp-for="ImgUrl" class="form-label"></label>
-            <input asp-for="ImgUrl" disabled class="form-control" />
-        </div>
-    </div>
 
-    <div class="mb-3">
-        <label asp-for="Amenity" class="form-label"></label>
-        <textarea asp-for="Amenity" disabled class="form-control" rows="4"></textarea>
-    </div>
-
-    <div class="d-flex justify-content-between">
-        <a asp-action="Index" class="btn btn-secondary">Back To List</a>
-        <input type="submit" class="btn btn-danger" value="Delete" />
-    </div>
 </form>
 
 @section Scripts {

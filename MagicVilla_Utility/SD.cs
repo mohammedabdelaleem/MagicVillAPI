@@ -21,4 +21,9 @@ public static class SD
 	public readonly static string Admin = "admin";
 	public readonly static string Customer = "customer";
 
+	public enum ContentType
+	{
+		Json ,
+		MultipartFormData
+	}
 }

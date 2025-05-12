@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 
 namespace Client_MagicVill.Servicies;
 
@@ -28,26 +29,67 @@ public class BaseService : IBaseService
 		try
 		{
 
-			var client = _httpClient.CreateClient("MagicAPI"); 
+			var client = _httpClient.CreateClient("MagicAPI");
 			// (In Program.cs, you must have configured this client with base URL, headers, etc.)
 
 
 
 			//  Build a message
 			var message = new HttpRequestMessage();
-			message.Headers.Add("Accept", "application/json");
+
+			if (apiRequest.ContentType == ContentType.MultipartFormData)
+			{
+				message.Headers.Add("Accept", "*/*");
+			}
+			else
+			{
+				message.Headers.Add("Accept", "application/json");
+			}
+
+
 			message.RequestUri = new Uri(apiRequest.Url);
 
-			if (apiRequest.Data != null) // Post ,Put
+			if (apiRequest.ContentType == ContentType.MultipartFormData)
 			{
-				// If you are sending data(e.g., for POST, PUT),
-				// serialize the object to JSON and add it to the request body.
+				var content = new MultipartFormDataContent();
 
-				// You Work With API - [WebService] , Any Platform speaks to any Platform So We Need The Standerd Format Like json when sending | recieving Data
+				foreach (var prop in apiRequest.Data.GetType().GetProperties()) // load all the properties we have on the apirequest.data (object)
+				{
+					var value = prop.GetValue(apiRequest.Data);
 
-				message.Content = new StringContent(JsonConvert.SerializeObject(apiRequest.Data),
-				Encoding.UTF8, "application/json");
+					if (value is FormFile)
+					{
+						var file = (FormFile)value;
+
+						if (file != null)
+						{
+							content.Add(new StreamContent(file.OpenReadStream()), prop.Name, file.FileName);
+						}
+					}
+					else
+					{
+						content.Add(new StringContent(value == null ? "" : value.ToString()), prop.Name);
+					}
+				}
+				message.Content = content;
 			}
+			else
+			{
+				if (apiRequest.Data != null) // Post ,Put
+				{
+					// If you are sending data(e.g., for POST, PUT),
+					// serialize the object to JSON and add it to the request body.
+
+					// You Work With API - [WebService] , Any Platform speaks to any Platform So We Need The Standerd Format Like json when sending | recieving Data
+
+					message.Content = new StringContent(JsonConvert.SerializeObject(apiRequest.Data),
+					Encoding.UTF8, "application/json");
+				}
+			}
+
+
+
+
 
 			// Set HTTP method
 			switch (apiRequest.ApiType)
@@ -110,15 +152,15 @@ public class BaseService : IBaseService
 			{
 				ApiResponse response = JsonConvert.DeserializeObject<ApiResponse>(apiContent);
 
-				if(response !=null &&
-					(apiResponse.StatusCode == HttpStatusCode.BadRequest || 
+				if (response != null &&
+					(apiResponse.StatusCode == HttpStatusCode.BadRequest ||
 					apiResponse.StatusCode == HttpStatusCode.NotFound))
 				{
 					response.StatusCode = HttpStatusCode.BadRequest;
 					response.IsSuccess = false;
 				}
 
-				var result = JsonConvert.SerializeObject(response );
+				var result = JsonConvert.SerializeObject(response);
 				var returnObj = JsonConvert.DeserializeObject<T>(result);
 				return returnObj;
 			}
