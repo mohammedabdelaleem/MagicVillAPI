@@ -10,21 +10,24 @@ namespace Client_MagicVill.Servicies;
 public class BaseService : IBaseService
 {
 	private readonly ILogger<BaseService> _logger;
+	private readonly ITokenProvider _tokenProvider;
+
 	public ApiResponse _responseModel { get; set; }
 
 
 	// in order to [ call the api ] we will using IHttpClientFactory that is already injected at DI
 	public IHttpClientFactory _httpClient { get; set; }
-	public BaseService(IHttpClientFactory httpClient, ILogger<BaseService> logger)
+	public BaseService(IHttpClientFactory httpClient, ILogger<BaseService> logger, ITokenProvider tokenProvider)
 	{
 		_responseModel = new();
 		_httpClient = httpClient;
 		_logger = logger;
+		_tokenProvider = tokenProvider;
 	}
 
 
 	// sends HTTP requests Dynamically.
-	public async Task<T> SendAsync<T>(ApiRequest apiRequest)
+	public async Task<T> SendAsync<T>(ApiRequest apiRequest, bool withBearer = true	)
 	{
 		try
 		{
@@ -48,6 +51,14 @@ public class BaseService : IBaseService
 
 
 			message.RequestUri = new Uri(apiRequest.Url);
+
+			// what if some of our end points don't require a token
+
+			if (withBearer&& _tokenProvider.GetToken() != null)
+			{
+				var token = _tokenProvider.GetToken();	
+				client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.AccessToken);
+			}
 
 			if (apiRequest.ContentType == ContentType.MultipartFormData)
 			{

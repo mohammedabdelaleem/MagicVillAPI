@@ -18,7 +18,7 @@ public class HomeController : Controller
 		List<VillaDTO> villas = new();
 
 		// Api Will Always Return The Type : APIResponse
-		var response = await _villaService.GetAllAsync<ApiResponse>(HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaService.GetAllAsync<ApiResponse>();
 
 		if (response != null && response.IsSuccess)
 		{

@@ -7,10 +7,7 @@ using System.Text;
 
 namespace MagicVilla_VillaAPI.Implementations;
 
-/// <summary>
-/// This class is responsible for user-related features like checking if a username is already taken,
-/// registering new users, logging in users, and generating JWT tokens.
-/// </summary>
+
 public class UserRepository : IUserRepository
 {
 	private readonly AppDbContext _context;
@@ -36,10 +33,6 @@ public class UserRepository : IUserRepository
 		return await _context.ApplicationUsers.FirstOrDefaultAsync(u=>u.UserName.ToLower() == username.ToLower(), cancellationToken);
 	}
 
-	/// <summary>
-	/// Checks if the given username is already used by another user.
-	/// Returns true if it's unique (not used).
-	/// </summary>
 	public async Task<bool> IsUniqueUserAsync(string username, CancellationToken cancellationToken = default)
 	{
 		// Look for a user in the database with the same username (case-insensitive)
@@ -51,11 +44,7 @@ public class UserRepository : IUserRepository
 		return !found;
 	}
 
-	/// <summary>
-	/// Tries to log in the user by checking username and password.
-	/// If valid, returns a JWT token that the client can use to stay logged in.
-	/// </summary>
-	public async Task<LoginResponsDTO> Login(LoginRequestDTO request, CancellationToken cancellationToken = default)
+	public async Task<TokenDTO> Login(LoginRequestDTO request, CancellationToken cancellationToken = default)
 	{
 		// Step 1: Try to find a user with the given username and password
 		var user = await GetAsync(request.UserName.ToLower(),
@@ -67,14 +56,27 @@ public class UserRepository : IUserRepository
 		// If not found, return null (login failed)
 		if (user == null || !validPassword)
 		{
-			return new LoginResponsDTO
+			return new TokenDTO
 			{
-				Token = null,
-				User = null
+				AccessToken = null,
 			};
 		}
 
 		// Step 2: Create a JWT token for the user
+		var accessToken = await GetAccessToken(user);
+
+		// Return the user info and the token as a response
+		return new TokenDTO
+		{
+
+			AccessToken = accessToken
+		};
+	}
+
+
+
+	private async Task<string> GetAccessToken(ApplicationUser user)
+	{
 
 		var tokenHandler = new JwtSecurityTokenHandler();  // tool to create and handle tokens
 		var key = Encoding.ASCII.GetBytes(_secretKey);     // convert our secret key to bytes
@@ -102,21 +104,10 @@ public class UserRepository : IUserRepository
 
 		// Create the token
 		var token = tokenHandler.CreateToken(tokenDescriptor);
-
-		// Return the user info and the token as a response
-		return new LoginResponsDTO
-		{
-			User = user.Adapt<UserDTO>(),
-			Token = tokenHandler.WriteToken(token)
-		};
+		var tokenStr = tokenHandler.WriteToken(token);
+		return tokenStr;
 	}
 
-	
-	
-	/// <summary>
-	/// Registers a new user in the system.
-	/// Returns the created user with password removed for safety.
-	/// </summary>
 	public async Task<UserDTO> Register(RegisterationRequestDTO request, CancellationToken cancellationToken = default)
 	{
 		// Convert the registration data into a user object (using Mapster or similar tool)

@@ -1,43 +1,46 @@
 ﻿using Client_MagicVill.Contracts.Auth;
+using Client_MagicVill.Servicies.IServicies;
 using MagicVilla_Utility;
 
 namespace Client_MagicVill.Servicies;
 
-public class AuthService : BaseService, IAuthService
+public class AuthService : IAuthService
 {
 	private readonly IHttpClientFactory _httpClient;
+	private readonly IBaseService _baseService;
 	private string villaApi;
 	private string version;
 
-	public AuthService(IHttpClientFactory httpClient, IConfiguration configuration, ILogger<BaseService> logger) : base(httpClient, logger)
+	public AuthService(IHttpClientFactory httpClient, IConfiguration configuration, ILogger<BaseService> logger, IBaseService baseService)
 	{
 		_httpClient = httpClient;
+		_baseService = baseService;
 		villaApi = configuration.GetValue<string>("UrlServices:VillaApi")!;
 		version = SD.CurrentApiVersion;
 
 	}
 
-	public Task<T> LoginAsync<T>(LoginRequestDTO obj)
+	public async Task<T> LoginAsync<T>(LoginRequestDTO obj)
 	{
-		return SendAsync<T>(
+		return await _baseService.SendAsync<T>(
 	new ApiRequest
 	{
 		ApiType = ApiType.POST,
 		Url = villaApi + $"/auth/{version}/Users/login",
 		Data = obj
 	}
-	);
+	, withBearer:false);
 	}
 
-	public Task<T> RegsisterAsync<T>(RegisterationRequestDTO obj)
+	public async Task<T> RegsisterAsync<T>(RegisterationRequestDTO obj)
 	{
-		return SendAsync<T>(
+		return await _baseService.SendAsync<T>(
 	new ApiRequest
 	{
 		ApiType = ApiType.POST,
 		Url = villaApi + $"/auth/{version}/Users/register",
 		Data = obj
 	}
-	);
+	, withBearer: false);
 	}
 }

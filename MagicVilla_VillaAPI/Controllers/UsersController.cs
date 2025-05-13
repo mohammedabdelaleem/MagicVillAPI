@@ -19,9 +19,9 @@
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] LoginRequestDTO request, CancellationToken cancellationToken=default)
 		{
-			LoginResponsDTO loginResponse = await _userRepository.Login(request, cancellationToken);
+			TokenDTO tokenDto = await _userRepository.Login(request, cancellationToken);
 
-			if (loginResponse.User == null || string.IsNullOrEmpty(loginResponse.Token))
+			if (tokenDto == null || string.IsNullOrEmpty(tokenDto.AccessToken))
 			{
 				_response.StatusCode = HttpStatusCode.BadRequest;
 				_response.IsSuccess = false;
@@ -31,7 +31,7 @@
 
 			_response.StatusCode = HttpStatusCode.OK;
 			_response.IsSuccess = true;
-			_response.Result = loginResponse;
+			_response.Result = tokenDto;
 			return Ok(_response);
 
 		}

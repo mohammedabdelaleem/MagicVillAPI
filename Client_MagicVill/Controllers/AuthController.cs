@@ -12,10 +12,12 @@ namespace Client_MagicVill.Controllers;
 public class AuthController : Controller
 {
 	private readonly IAuthService _authService;
+	private readonly ITokenProvider _tokenProvider;
 
-	public AuthController(IAuthService authService)
+	public AuthController(IAuthService authService, ITokenProvider tokenProvider)
 	{
 		_authService = authService;
+		_tokenProvider = tokenProvider;
 	}
 
 
@@ -33,10 +35,10 @@ public class AuthController : Controller
 
 		if (response != null && response.IsSuccess)
 		{
-			LoginResponsDTO model = JsonConvert.DeserializeObject<LoginResponsDTO>(Convert.ToString(response.Result));
+			TokenDTO model = JsonConvert.DeserializeObject<TokenDTO>(Convert.ToString(response.Result));
 
 			var handler = new JwtSecurityTokenHandler();
-			var jwt = handler.ReadJwtToken(model.Token);
+			var jwt = handler.ReadJwtToken(model.AccessToken);
 
 
 
@@ -52,7 +54,9 @@ public class AuthController : Controller
 			await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
 
-			HttpContext.Session.SetString(SD.SessionKey, model.Token);
+			//HttpContext.Session.SetString(SD.AccessToken, model.AccessToken);
+
+			_tokenProvider.SetToken(model);
 			return RedirectToAction("Index", "Home");
 		}
 		else
@@ -110,7 +114,10 @@ public class AuthController : Controller
 	public IActionResult Logout()
 	{
 		HttpContext.SignOutAsync();
-		HttpContext.Session.SetString(SD.SessionKey, "");
+
+		//HttpContext.Session.SetString(SD.AccessToken, "");
+		_tokenProvider.ClearToken();
+
 		return RedirectToAction("Index", "Home");
 
 	}

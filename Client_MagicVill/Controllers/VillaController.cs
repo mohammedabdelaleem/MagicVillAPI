@@ -20,7 +20,7 @@ public class VillaController : Controller
 		List<VillaDTO> villas = new();
 
 		// Api Will Always Return The Type : APIResponse
-		var response = await _villaService.GetAllAsync<ApiResponse>(HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaService.GetAllAsync<ApiResponse>();
 
 		if (response != null && response.IsSuccess)
 		{
@@ -34,7 +34,7 @@ public class VillaController : Controller
 	[Authorize(Roles = "admin")]
 	public async Task<IActionResult> Create()
 	{
-		return View();
+	  return  View();
 	}
 
 	[HttpPost]
@@ -45,7 +45,7 @@ public class VillaController : Controller
 
 		if (ModelState.IsValid)
 		{
-			var response = await _villaService.CreateAsync<ApiResponse>(model, HttpContext.Session.GetString(SD.SessionKey));
+			var response = await _villaService.CreateAsync<ApiResponse>(model );
 
 			if (response != null && response.IsSuccess)
 			{
@@ -63,7 +63,7 @@ public class VillaController : Controller
 	public async Task<IActionResult> Update(int villaId)
 	{
 
-		var response = await _villaService.GetAsync<ApiResponse>(villaId, HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaService.GetAsync<ApiResponse>(villaId );
 
 		if (response != null && response.IsSuccess)
 		{
@@ -83,7 +83,7 @@ public class VillaController : Controller
 
 		if (ModelState.IsValid)
 		{
-			var response = await _villaService.UpdateAsync<ApiResponse>(model, HttpContext.Session.GetString(SD.SessionKey));
+			var response = await _villaService.UpdateAsync<ApiResponse>(model );
 
 			if (response != null && response.IsSuccess)
 			{
@@ -103,7 +103,7 @@ public class VillaController : Controller
 	public async Task<IActionResult> Delete(int villaId)
 	{
 
-		var response = await _villaService.GetAsync<ApiResponse>(villaId,HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaService.GetAsync<ApiResponse>(villaId);
 
 		if (response != null && response.IsSuccess)
 		{
@@ -121,7 +121,7 @@ public class VillaController : Controller
 	{
 
 
-		var response = await _villaService.DeleteAsync<ApiResponse>(model.Id, HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaService.DeleteAsync<ApiResponse>(model.Id );
 
 		if (response != null && response.IsSuccess)
 		{

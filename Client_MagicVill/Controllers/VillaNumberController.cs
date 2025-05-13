@@ -24,7 +24,7 @@ public class VillaNumberController : Controller
 		List<VillaNumberDTO> villas = new();
 
 		// Api Will Always Return The Type : APIResponse
-		var response = await _villaNumberService.GetAllAsync<ApiResponse>(HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaNumberService.GetAllAsync<ApiResponse>();
 
 		if (response != null && response.IsSuccess)
 		{
@@ -41,7 +41,7 @@ public class VillaNumberController : Controller
 
 
 		// Api Will Always Return The Type : APIResponse
-		var response = await _villaService.GetAllAsync<ApiResponse>(HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaService.GetAllAsync<ApiResponse>();
 
 		if (response != null && response.IsSuccess)
 		{
@@ -65,7 +65,7 @@ public class VillaNumberController : Controller
 
 		if (ModelState.IsValid)
 		{
-			var response = await _villaNumberService.CreateAsync<ApiResponse>(model.VillaNumber,HttpContext.Session.GetString(SD.SessionKey));
+			var response = await _villaNumberService.CreateAsync<ApiResponse>(model.VillaNumber);
 
 			if (response != null && response.IsSuccess)
 			{
@@ -85,7 +85,7 @@ public class VillaNumberController : Controller
 		}
 
 
-		var ApiResponse = await _villaService.GetAllAsync<ApiResponse>(HttpContext.Session.GetString(SD.SessionKey));
+		var ApiResponse = await _villaService.GetAllAsync<ApiResponse>();
 		model.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
 		(Convert.ToString(ApiResponse.Result)).Select(x => new SelectListItem
 		{
@@ -103,14 +103,14 @@ public class VillaNumberController : Controller
 	{
 		var model = new VillaNumberUpdateDTOWithItsVillaNameVM();
 
-		var response = await _villaNumberService.GetAsync<ApiResponse>(villaNo,HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaNumberService.GetAsync<ApiResponse>(villaNo);
 		if (response != null && response.IsSuccess)
 		{
 			VillaNumberDTO villaNumber = JsonConvert.DeserializeObject<VillaNumberDTO>(Convert.ToString(response.Result));
 			model.VillaNumber = villaNumber.Adapt<VillaNumberUpdateDTO>();
 		}
 
-		response = await _villaService.GetAllAsync<ApiResponse>(HttpContext.Session.GetString(SD.SessionKey));
+		response = await _villaService.GetAllAsync<ApiResponse>();
 		if (response != null && response.IsSuccess)
 		{
 			model.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
@@ -134,7 +134,7 @@ public class VillaNumberController : Controller
 	{
 		if (ModelState.IsValid)
 		{
-			var response = await _villaNumberService.UpdateAsync<ApiResponse>(model.VillaNumber, HttpContext.Session.GetString(SD.SessionKey));
+			var response = await _villaNumberService.UpdateAsync<ApiResponse>(model.VillaNumber );
 
 			if (response != null && response.IsSuccess)
 			{
@@ -152,7 +152,7 @@ public class VillaNumberController : Controller
 		}
 
 
-		var ApiResponse = await _villaService.GetAllAsync<ApiResponse>( HttpContext.Session.GetString(SD.SessionKey));
+		var ApiResponse = await _villaService.GetAllAsync<ApiResponse>( );
 		model.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
 		(Convert.ToString(ApiResponse.Result)).Select(x => new SelectListItem
 		{
@@ -171,13 +171,14 @@ public class VillaNumberController : Controller
 
 		var model = new VillaNumberDeleteDTOWithItsVillaNameVM();
 
-		var response = await _villaNumberService.GetAsync<ApiResponse>(villaNo, HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaNumberService.GetAsync<ApiResponse>(villaNo
+			);
 		if (response != null && response.IsSuccess)
 		{
 			model.VillaNumber = JsonConvert.DeserializeObject<VillaNumberDTO>(Convert.ToString(response.Result));
 		}
 
-		response = await _villaService.GetAllAsync<ApiResponse>(HttpContext.Session.GetString(SD.SessionKey));
+		response = await _villaService.GetAllAsync<ApiResponse>();
 		if (response != null && response.IsSuccess)
 		{
 			model.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
@@ -202,7 +203,7 @@ public class VillaNumberController : Controller
 	{
 
 
-		var response = await _villaNumberService.DeleteAsync<ApiResponse>(model.VillaNumber.VillaNo, HttpContext.Session.GetString(SD.SessionKey));
+		var response = await _villaNumberService.DeleteAsync<ApiResponse>(model.VillaNumber.VillaNo );
 
 		if (response != null && response.IsSuccess)
 		{

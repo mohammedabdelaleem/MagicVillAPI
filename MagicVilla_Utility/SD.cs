@@ -16,7 +16,7 @@ public static class SD
 		DELETE
 	}
 
-	public readonly static string SessionKey = "JwtToken";
+	public readonly static string AccessToken = "JwtToken";
 	public readonly static string CurrentApiVersion = "v2";
 	public readonly static string Admin = "admin";
 	public readonly static string Customer = "customer";

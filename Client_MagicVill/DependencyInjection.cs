@@ -27,12 +27,18 @@ public static class DependencyInjection
 		services.AddHttpClient<IVillaNumberService, VillaNumberService>();
 		services.AddScoped<IVillaNumberService, VillaNumberService>();
 
+
 		services.AddHttpClient<IAuthService, AuthService>();
 		services.AddScoped<IAuthService, AuthService>();
+
+		services.AddScoped<IBaseService, BaseService>();
 
 		// session 
 		services.AddSingleton
 			<IHttpContextAccessor, HttpContextAccessor>();
+
+		services.AddScoped<ITokenProvider, TokenProvider>();
+
 
 		services.AddDistributedMemoryCache();
 		services.AddSession(options =>
