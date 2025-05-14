@@ -10,6 +10,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 	public DbSet<LocalUser> Users { get; set; }
 	public DbSet<Villa> Villas { get; set; }
 	public DbSet<VillaNumber> VillaNumbers { get; set; }
+	public DbSet<RefreshToken> RefreshTokens	 { get; set; }
 
 
 	protected override void OnModelCreating(ModelBuilder builder)

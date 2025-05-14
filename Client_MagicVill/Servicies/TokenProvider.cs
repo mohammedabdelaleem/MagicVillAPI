@@ -18,6 +18,8 @@ public class TokenProvider : ITokenProvider
 	public void ClearToken()
 	{
 		_httpContextAccessor.HttpContext?.Response.Cookies.Delete(SD.AccessToken);
+		_httpContextAccessor.HttpContext?.Response.Cookies.Delete(SD.RefreshToken);
+
 	}
 
 	public TokenDTO GetToken()
@@ -25,9 +27,12 @@ public class TokenProvider : ITokenProvider
 		try
 		{
 			bool hasAccessToken = _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(SD.AccessToken, out string accessToken);
+			bool hasRefreshToken = _httpContextAccessor.HttpContext.Request.Cookies.TryGetValue(SD.RefreshToken, out string refreshToken);
+
 			TokenDTO token = new TokenDTO
 			{
 				AccessToken = accessToken,
+				RefreshToken = refreshToken
 			};
 
 			return hasAccessToken ? token : null;	
@@ -42,6 +47,7 @@ public class TokenProvider : ITokenProvider
 	{
 		var cookieOptions = new CookieOptions { Expires = DateTime.UtcNow.AddDays(22) };
 		_httpContextAccessor.HttpContext?.Response.Cookies.Append(SD.AccessToken, tokenDTO.AccessToken,	cookieOptions);
+		_httpContextAccessor.HttpContext?.Response.Cookies.Append(SD.RefreshToken, tokenDTO.RefreshToken, cookieOptions);
 
 	}
 }

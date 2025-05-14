@@ -17,6 +17,8 @@ public static class SD
 	}
 
 	public readonly static string AccessToken = "JwtToken";
+	public readonly static string RefreshToken = "RefreshToken";
+
 	public readonly static string CurrentApiVersion = "v2";
 	public readonly static string Admin = "admin";
 	public readonly static string Customer = "customer";

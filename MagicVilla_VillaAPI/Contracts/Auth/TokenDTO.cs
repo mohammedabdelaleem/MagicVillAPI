@@ -3,5 +3,6 @@
 public class TokenDTO
 {
 	public string AccessToken { get; set; }
-	//public string Role { get; set; } // role at token 
+	public string RefreshToken { get; set; }
+
 }

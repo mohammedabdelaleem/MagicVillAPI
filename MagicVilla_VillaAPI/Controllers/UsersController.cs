@@ -7,19 +7,17 @@
 	public class UsersController : ControllerBase
 	{
 		private readonly IUserRepository _userRepository;
-		//private readonly IUnitOfWork _unitOfWork;
 		protected ApiResponse _response;
-		public UsersController(IUserRepository userRepository, IUnitOfWork unitOfWork)
+		public UsersController(IUserRepository userRepository)
 		{
 			_userRepository = userRepository;
-			//_unitOfWork = unitOfWork;
 			_response = new();
 		}
 
 		[HttpPost("login")]
 		public async Task<IActionResult> Login([FromBody] LoginRequestDTO request, CancellationToken cancellationToken=default)
 		{
-			TokenDTO tokenDto = await _userRepository.Login(request, cancellationToken);
+			TokenDTO tokenDto = await _userRepository.LoginAsync(request, cancellationToken);
 
 			if (tokenDto == null || string.IsNullOrEmpty(tokenDto.AccessToken))
 			{
@@ -49,7 +47,7 @@
 				return BadRequest(_response);
 			}
 			
-			var user = await _userRepository.Register(request, cancellationToken);
+			var user = await _userRepository.RegisterAsync(request, cancellationToken);
 			if (user == null)
 			{
 				_response.StatusCode = HttpStatusCode.BadRequest;
@@ -65,4 +63,39 @@
 		}
 
 
+
+	[HttpPost("refresh")]
+	public async Task<IActionResult> GetNewTokenFromRefreshToken([FromBody] TokenDTO tokenDTO, CancellationToken cancellationToken = default)
+	{
+		if (ModelState.IsValid)
+		{
+			//TODO: we can add if the refresh token is not expired : then return the same refresh token
+			var tokenDtoResponse = await _userRepository.RefreshAccessToken(tokenDTO, cancellationToken);
+
+			if (tokenDtoResponse == null || string.IsNullOrEmpty(tokenDtoResponse.AccessToken))
+			{
+				_response.StatusCode = HttpStatusCode.BadRequest;
+				_response.IsSuccess = false;
+				_response.ErrorMessages.Add("Token Invalid");
+
+			    return BadRequest(_response);
+			}
+
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			_response.Result = tokenDtoResponse;
+			return Ok(_response);
+
+		}
+		else
+		{
+			_response.StatusCode = HttpStatusCode.BadRequest;
+			_response.IsSuccess = false;
+			_response.ErrorMessages.Add("Token Invalid");
+			return BadRequest(_response);
+		}
+
 	}
+
+
+}
