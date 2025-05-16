@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 namespace MagicVilla_VillaAPI.Implementations;
 
 public class UserRepository : IUserRepository
@@ -166,19 +167,15 @@ public class UserRepository : IUserRepository
 		var existingRefreshToken = await _context.RefreshTokens.FirstOrDefaultAsync(u =>
 		u.Refresh_Token == tokenDTO.RefreshToken);
 
-		if( existingRefreshToken is null )return new TokenDTO(); 
+		if (existingRefreshToken is null) return new TokenDTO();
 
 
 		// 02 - Compare Data from refresh and access token provided and if there are any missmatches then consider this is a fraud {access token has userid , jti}
-		 var accessTokenData = GetAccessTokenData(tokenDTO.AccessToken);
-		
-		if (!accessTokenData.isSuccessful || 
-			accessTokenData.jwtTokenId != existingRefreshToken.JwtTokenId ||
-			accessTokenData.userId != existingRefreshToken.UserId 
-			)
+		var isTokenValid = GetAccessTokenData(tokenDTO.AccessToken, existingRefreshToken.UserId, existingRefreshToken.JwtTokenId);
+
+		if (!isTokenValid)
 		{
-			existingRefreshToken.IsValid= false;
-			await _context.SaveChangesAsync(cancellationToken);
+			await MarkTokenAsInvalidAsync(existingRefreshToken, cancellationToken);
 			return new TokenDTO();
 		}
 
@@ -203,20 +200,13 @@ public class UserRepository : IUserRepository
 		// Bulk Updation 
 		if (!existingRefreshToken.IsValid)
 		{
-
-			var chainRecords = await _context.RefreshTokens.Where(
-				r => r.JwtTokenId == existingRefreshToken.JwtTokenId &&
-				r.UserId == existingRefreshToken.UserId)
-				.ExecuteUpdateAsync(u => u.SetProperty(refreshToken => refreshToken.IsValid, false));
-		
-			return new TokenDTO();
+			await MarkAllTokensInChainAsInvalidAsync(existingRefreshToken.UserId, existingRefreshToken.JwtTokenId,	cancellationToken);
 		}
 
 		// 04 - If Just Expired then mark as invalid and return empty
 		if (existingRefreshToken.ExpiresAt < DateTime.UtcNow)
 		{
-			existingRefreshToken.IsValid = false;
-			await _context.SaveChangesAsync( cancellationToken);
+			await MarkTokenAsInvalidAsync(existingRefreshToken, cancellationToken);
 			return new TokenDTO();
 
 		}
@@ -226,16 +216,16 @@ public class UserRepository : IUserRepository
 
 
 		// 06 - revoke the existing refresh token
-		existingRefreshToken.IsValid = false;
-		await _context.SaveChangesAsync(cancellationToken);
+		await MarkTokenAsInvalidAsync(existingRefreshToken, cancellationToken);
+
 
 
 		// 07 - Generate New Access Token
-		var applicationUser = await _context.ApplicationUsers.FirstOrDefaultAsync(u=>u.Id == existingRefreshToken.UserId);
-		if( applicationUser == null ) 
+		var applicationUser = await _context.ApplicationUsers.FirstOrDefaultAsync(u => u.Id == existingRefreshToken.UserId);
+		if (applicationUser == null)
 			return new TokenDTO();
 
-		var newAccessToken = await GetAccessToken(applicationUser , existingRefreshToken.JwtTokenId);
+		var newAccessToken = await GetAccessToken(applicationUser, existingRefreshToken.JwtTokenId);
 		//  we use the old JwtTokenId : we can easily tracked which token id(s) are related 
 
 		return new TokenDTO()
@@ -243,6 +233,22 @@ public class UserRepository : IUserRepository
 			AccessToken = newAccessToken,
 			RefreshToken = newRefreshToken,
 		};
+	}
+
+	public async Task RevokeRefreshTokenAsync(TokenDTO tokenDTO, CancellationToken cancellationToken = default)
+	{
+		var existingRefreshToken = await _context.RefreshTokens.FirstOrDefaultAsync(
+			t=>t.Refresh_Token == tokenDTO.RefreshToken
+			,cancellationToken);
+
+		var isTokenValid = GetAccessTokenData(tokenDTO.AccessToken, existingRefreshToken.UserId, existingRefreshToken.JwtTokenId);
+
+		if (!isTokenValid)
+		{
+			return;
+		}
+
+		await MarkAllTokensInChainAsInvalidAsync(existingRefreshToken.UserId, existingRefreshToken.JwtTokenId, cancellationToken);
 	}
 
 	private async Task<string> CreateNewRefreshTokenAsync(string userId, string tokenId, CancellationToken cancellationToken = default)
@@ -264,7 +270,7 @@ public class UserRepository : IUserRepository
 
 
 	// End point to read the access token
-	private (bool isSuccessful, string userId, string jwtTokenId) GetAccessTokenData(string accessToken)
+	private bool GetAccessTokenData(string accessToken, string expectedUserId, string expectedJwtTokenId)
 	{
 		try
 		{
@@ -274,12 +280,28 @@ public class UserRepository : IUserRepository
 			var userId = jwt.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub).Value;
 			var jwtTokenId = jwt.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Jti).Value;
 
-			return (true, userId, jwtTokenId);
+			return userId == expectedUserId && jwtTokenId == expectedJwtTokenId;
 		}
 		catch
 		{
-			return (false, null, null);
+			return false;
 		}
 	}
+
+	private async Task MarkAllTokensInChainAsInvalidAsync(string userId, string tokenId, CancellationToken cancellationToken = default)
+	{
+		 await _context.RefreshTokens.Where(
+				r => r.JwtTokenId == tokenId &&
+				r.UserId == userId)
+				.ExecuteUpdateAsync(u => u.SetProperty(refreshToken => refreshToken.IsValid, false),cancellationToken);
+
+	}
+	private Task MarkTokenAsInvalidAsync(RefreshToken refreshToken, CancellationToken cancellationToken = default)
+	{
+		refreshToken.IsValid = false;
+		  return _context.SaveChangesAsync(cancellationToken);
+	}
+
+	
 }
 

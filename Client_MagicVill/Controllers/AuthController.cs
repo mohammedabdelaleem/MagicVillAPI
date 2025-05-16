@@ -115,9 +115,10 @@ public class AuthController : Controller
 	{
 		HttpContext.SignOutAsync();
 
-		//HttpContext.Session.SetString(SD.AccessToken, "");
-		_tokenProvider.ClearToken();
+		var token = _tokenProvider.GetToken();
+		_authService.LogoutAsync<ApiResponse>(token);
 
+		_tokenProvider.ClearToken();
 		return RedirectToAction("Index", "Home");
 
 	}

@@ -1,6 +1,8 @@
-﻿using Mapster;
+﻿using Client_MagicVill.Extensions;
+using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Reflection;
 
 namespace Client_MagicVill;
@@ -11,7 +13,7 @@ public static class DependencyInjection
 	public static IServiceCollection AddDependencies(this IServiceCollection services , IConfiguration configuration)
 	{
 
-		services.AddControllersWithViews();
+		services.AddControllersWithViews(x=>x.Filters.Add(new AuthExceptionRedirection()));
 
 
 		// mapster 
@@ -39,6 +41,7 @@ public static class DependencyInjection
 
 		services.AddScoped<ITokenProvider, TokenProvider>();
 
+		services.AddSingleton<IApiMessageRequestBuilder,  ApiMessageRequestBuilder>();
 
 		services.AddDistributedMemoryCache();
 		services.AddSession(options =>

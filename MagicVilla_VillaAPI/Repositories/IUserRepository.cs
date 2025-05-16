@@ -19,4 +19,8 @@ public interface IUserRepository
 
 	Task<TokenDTO> RefreshAccessToken(TokenDTO loginRequest, CancellationToken cancellationToken = default);
 
+	Task RevokeRefreshTokenAsync(TokenDTO tokenDTO, CancellationToken cancellationToken=default);
+
+
+
 }

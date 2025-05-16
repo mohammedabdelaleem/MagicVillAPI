@@ -15,6 +15,7 @@ public class BaseService : IBaseService
 {
 	private readonly ITokenProvider _tokenProvider;
 	private readonly IHttpContextAccessor _httpContextAccessor;
+	private readonly IApiMessageRequestBuilder _apiMessageRequestBuilder;
 	protected readonly string _villaApiUrl;
 	public ApiResponse _responseModel { get; set; }
 
@@ -22,13 +23,15 @@ public class BaseService : IBaseService
 	// in order to [ call the api ] we will using IHttpClientFactory that is already injected at DI
 	public IHttpClientFactory _httpClient { get; set; }
 	public BaseService(IHttpClientFactory httpClient, ILogger<BaseService> logger, ITokenProvider tokenProvider
-		, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
+		, IConfiguration configuration, IHttpContextAccessor httpContextAccessor,
+		IApiMessageRequestBuilder apiMessageRequestBuilder)
 	{
 		_responseModel = new();
 		_httpClient = httpClient;
 		_villaApiUrl = configuration.GetValue<string>("UrlServices:VillaApi");
 		_tokenProvider = tokenProvider;
 		_httpContextAccessor = httpContextAccessor;
+		_apiMessageRequestBuilder = apiMessageRequestBuilder;
 	}
 
 
@@ -45,80 +48,7 @@ public class BaseService : IBaseService
 			// forbidden to use the same message object more than once 
 			var messageFactory = () =>
 			{
-				//  Build a message
-				var message = new HttpRequestMessage();
-
-				if (apiRequest.ContentType == ContentType.MultipartFormData)
-				{
-					message.Headers.Add("Accept", "*/*"); 
-				}
-				else
-				{
-					message.Headers.Add("Accept", "application/json");
-				}
-
-
-				message.RequestUri = new Uri(apiRequest.Url);
-
-
-
-				if (apiRequest.ContentType == ContentType.MultipartFormData)
-				{
-					var content = new MultipartFormDataContent();
-
-					foreach (var prop in apiRequest.Data.GetType().GetProperties()) // load all the properties we have on the apirequest.data (object)
-					{
-						var value = prop.GetValue(apiRequest.Data);
-
-						if (value is FormFile)
-						{
-							var file = (FormFile)value;
-
-							if (file != null)
-							{
-								content.Add(new StreamContent(file.OpenReadStream()), prop.Name, file.FileName);
-							}
-						}
-						else
-						{
-							content.Add(new StringContent(value == null ? "" : value.ToString()), prop.Name);
-						}
-					}
-					message.Content = content;
-				}
-				else
-				{
-					if (apiRequest.Data != null) // Post ,Put
-					{
-						// If you are sending data(e.g., for POST, PUT),
-						// serialize the object to JSON and add it to the request body.
-
-						// You Work With API - [WebService] , Any Platform speaks to any Platform So We Need The Standerd Format Like json when sending | recieving Data
-
-						message.Content = new StringContent(JsonConvert.SerializeObject(apiRequest.Data),
-						Encoding.UTF8, "application/json");
-					}
-				}
-
-
-				// Set HTTP method
-				switch (apiRequest.ApiType)
-				{
-					case ApiType.POST:
-						message.Method = HttpMethod.Post;
-						break;
-					case ApiType.PUT:
-						message.Method = HttpMethod.Put;
-						break;
-					case ApiType.DELETE:
-						message.Method = HttpMethod.Delete;
-						break;
-					default:
-						message.Method = HttpMethod.Get;
-						break;
-				}
-
-				return message;
+				return _apiMessageRequestBuilder.Build(apiRequest);
 			};
 
 			HttpResponseMessage httpResponseMessage = null;
@@ -188,6 +118,10 @@ public class BaseService : IBaseService
 			return returnObj;
 
 		}
+		catch (AuthException) // now base service is configured to throw AuthException , We Need To Have An Extension Method that will capture this exception and redirect to Login Page==> and this will done by using exception filter
+		{
+			throw; 
+		}
 		catch (Exception ex)
 		{
 
@@ -241,6 +175,10 @@ public class BaseService : IBaseService
 
 				return response;
 			}
+			catch (AuthException)
+			{
+				throw; // throw exception directly to the parent
+			}
 			catch (HttpRequestException httpRequestException)
 			{
 				if (httpRequestException.StatusCode == HttpStatusCode.Unauthorized)
@@ -280,8 +218,12 @@ public class BaseService : IBaseService
 		if (apiResponse?.IsSuccess != true)
 		{
 			// tokene refreshment failed so we can't use refresh token any more (we have to remove that ) and in top of that we need to sign out the user
+			
+			// if unauthorized automatically redirect the user to login page 
+			// at that point we can throw a custome exception we can catch that and process it and redirect it to the login page	
 			await _httpContextAccessor.HttpContext.SignOutAsync();
 			_tokenProvider.ClearToken();
+			throw new AuthException();
 		}
 		else
 		{

@@ -32,6 +32,17 @@ public class AuthService : IAuthService
 	, withBearer:false);
 	}
 
+	public async Task<T> LogoutAsync<T>(TokenDTO obj)
+	{
+		return await _baseService.SendAsync<T>(
+	new ApiRequest
+	{
+		ApiType = ApiType.POST,
+		Url = villaApi + $"/auth/{version}/Users/revoke",
+		Data = obj
+	});
+	}
+
 	public async Task<T> RegsisterAsync<T>(RegisterationRequestDTO obj)
 	{
 		return await _baseService.SendAsync<T>(

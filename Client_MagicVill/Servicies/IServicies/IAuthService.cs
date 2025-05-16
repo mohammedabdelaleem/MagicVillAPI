@@ -6,5 +6,6 @@ public interface IAuthService
 {
 	Task<T> RegsisterAsync<T>(RegisterationRequestDTO obj);
 	Task<T> LoginAsync<T>(LoginRequestDTO obj);
+	Task<T> LogoutAsync<T>(TokenDTO tokendto);
 
 }

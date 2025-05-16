@@ -98,4 +98,27 @@
 	}
 
 
+	[HttpPost("revoke")]
+	public async Task<IActionResult> RevokeRefreshToken([FromBody] TokenDTO tokenDTO, CancellationToken cancellationToken = default)
+	{
+	
+		if (ModelState.IsValid)
+		{
+			await _userRepository.RevokeRefreshTokenAsync(tokenDTO, cancellationToken);
+			_response.StatusCode = HttpStatusCode.OK;
+			_response.IsSuccess = true;
+			return Ok(_response);
+		}
+
+		
+			_response.StatusCode = HttpStatusCode.BadRequest;
+			_response.IsSuccess = false;
+			_response.Result ="Invalid Input";
+			return BadRequest(_response);
+	
+	}
+
+
+
+
 }
