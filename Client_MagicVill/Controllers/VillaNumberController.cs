@@ -17,8 +17,6 @@ public class VillaNumberController : Controller
 		_villaService = villaService;
 	}
 
-
-
 	public async Task<IActionResult> Index()
 	{
 		List<VillaNumberDTO> villas = new();
@@ -52,6 +50,12 @@ public class VillaNumberController : Controller
 					Value = x.Id.ToString()
 				});
 		}
+		else
+		{
+			TempData["error"] = (response.ErrorMessages != null && response.ErrorMessages.Count > 0) ?
+				response.ErrorMessages[0] : "error encountered";
+
+		}
 
 
 		return View(model);
@@ -74,14 +78,9 @@ public class VillaNumberController : Controller
 			}
 			else
 			{
-				if(response.ErrorMessages.Count > 0)
-				{
-					TempData["error"] = "error encountered";
-					ModelState.AddModelError("ErrorMessages" , response.ErrorMessages.FirstOrDefault());	
-				}
+				TempData["error"] = (response.ErrorMessages != null && response.ErrorMessages.Count > 0)?
+					response.ErrorMessages[0] :"error encountered";
 			}
-
-			
 		}
 
 
@@ -93,7 +92,6 @@ public class VillaNumberController : Controller
 			Value = x.Id.ToString()
 		});
 
-		TempData["error"] = "error encountered";
 		return View(model);
 	}
 
@@ -143,11 +141,9 @@ public class VillaNumberController : Controller
 			}
 			else
 			{
-				if (response.ErrorMessages.Count > 0)
-				{
-					TempData["error"] = "error encountered";
-					ModelState.AddModelError("ErrorMessages", response.ErrorMessages.FirstOrDefault());
-				}
+				TempData["error"] = (response.ErrorMessages != null && response.ErrorMessages.Count > 0) ?
+					response.ErrorMessages[0] : "error encountered";
+
 			}
 		}
 
@@ -210,8 +206,13 @@ public class VillaNumberController : Controller
 			TempData["success"] = "Villa Number Deleted Successfully";
 			return RedirectToAction(nameof(Index));
 		}
+		else
+		{
+			TempData["error"] = (response.ErrorMessages != null && response.ErrorMessages.Count > 0) ?
+				response.ErrorMessages[0] : "error encountered";
 
-		TempData["error"] = "error encountered";
+		}
+
 		return View(model);
 
 	}

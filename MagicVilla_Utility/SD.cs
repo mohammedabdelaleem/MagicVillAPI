@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MagicVilla_Utility;
+﻿namespace MagicVilla_Utility;
 public static class SD
 {
 
@@ -18,6 +12,10 @@ public static class SD
 
 	public readonly static string AccessToken = "JwtToken";
 	public readonly static string RefreshToken = "RefreshToken";
+	public readonly static int AccessTokenExpiresInNMinutes = 1;
+	public readonly static int RefreshTokenExpiresInNMinutes = 2;
+
+
 
 	public readonly static string CurrentApiVersion = "v2";
 	public readonly static string Admin = "admin";

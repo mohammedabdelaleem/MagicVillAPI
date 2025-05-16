@@ -248,7 +248,7 @@ namespace MagicVilla_VillaAPI.Controllers.v2
 				if (id != updateDto.Id)
 					return BadRequest(new { message = "ID mismatch between route and payload." });
 
-				//var existing = await _unitOfWork.Villa.GetAsync(v => v.Id == id, cancellationToken: cancellationToken);
+			
 				//if (existing == null)
 				//	return NotFound(new { message = $"Villa with ID {id} not found." });
 
@@ -291,7 +291,12 @@ namespace MagicVilla_VillaAPI.Controllers.v2
 				}
 				else
 				{
-					model.ImgUrl = "https://placehold.co/600x405";
+					// if there is image before . set it 
+					var villa = await _unitOfWork.Villa.GetAsync(v => v.Id == id, cancellationToken: cancellationToken);
+					model.ImgUrl = villa.ImgUrl;
+					model.ImageLocalPath = villa.ImageLocalPath;
+
+					//model.ImgUrl = "https://placehold.co/600x405";
 				}
 
 

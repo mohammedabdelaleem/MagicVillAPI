@@ -1,12 +1,11 @@
-﻿using MagicVilla_VillaAPI.Contracts;
+﻿using MagicVilla_Utility;
+using MagicVilla_VillaAPI.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-
 namespace MagicVilla_VillaAPI.Implementations;
-
 
 public class UserRepository : IUserRepository
 {
@@ -99,7 +98,7 @@ public class UserRepository : IUserRepository
 		var tokenDescriptor = new SecurityTokenDescriptor
 		{
 			Subject = new ClaimsIdentity(claims),
-			Expires = DateTime.UtcNow.AddMinutes(5), // token will expire in 5 days
+			Expires = DateTime.UtcNow.AddMinutes(SD.AccessTokenExpiresInNMinutes), // token will expire in 5 days
 			SigningCredentials = new SigningCredentials(
 				new SymmetricSecurityKey(key),      // our secret key
 				SecurityAlgorithms.HmacSha256Signature) // algorithm to sign the token
@@ -254,7 +253,7 @@ public class UserRepository : IUserRepository
 			JwtTokenId = tokenId,
 			UserId = userId,
 			Refresh_Token = $"{Guid.NewGuid()}-{Guid.NewGuid()}",
-			ExpiresAt = DateTime.UtcNow.AddDays(16)
+			ExpiresAt = DateTime.UtcNow.AddMinutes(SD.RefreshTokenExpiresInNMinutes)
 		};
 
 		await _context.RefreshTokens.AddAsync(refreshToken, cancellationToken);

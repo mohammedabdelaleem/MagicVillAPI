@@ -35,11 +35,21 @@ public class TokenProvider : ITokenProvider
 				RefreshToken = refreshToken
 			};
 
-			return hasAccessToken ? token : null;	
+			return hasAccessToken ? token : new TokenDTO
+			{
+				AccessToken = "",
+				RefreshToken = ""
+			};	
 		}
 		catch (Exception ex)
 		{
-			return null;
+
+			return new TokenDTO
+			{
+				AccessToken = "",
+				RefreshToken = ""
+			};
+
 		}
 	}
 

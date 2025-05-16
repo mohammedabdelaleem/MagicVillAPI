@@ -77,9 +77,10 @@ public static class DependencyInjection
 					ValidateIssuerSigningKey = true,
 					IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
 					ValidateIssuer = false,
-					ValidateAudience = false
-				};
-			}); ;
+					ValidateAudience = false,
+					ClockSkew = TimeSpan.Zero, // after a token is expired 1 second age. mark it as expired [No Mercy]
+				}; 
+			}); 
 
 
 		// swager and versioning cofig
