@@ -14,6 +14,9 @@ public class UserRepository : IUserRepository
 	private readonly UserManager<ApplicationUser> _userManager;
 	private readonly RoleManager<IdentityRole> _roleManager;
 	private readonly string _secretKey;
+	private readonly string _issuer;
+	private readonly string _audiance;
+
 
 	// Constructor: gets the database and secret key from the app settings
 	public UserRepository(AppDbContext context,
@@ -26,6 +29,9 @@ public class UserRepository : IUserRepository
 		_userManager = userManager;
 		_roleManager = roleManager;
 		_secretKey = configuration.GetValue<string>("ApiSettings:Secret");
+		_issuer = configuration.GetValue<string>("Jwt:Issuer");
+		_audiance = configuration.GetValue<string>("Jwt:Audience");
+
 	}
 
 	public async Task<ApplicationUser> GetAsync(string username, CancellationToken cancellationToken = default)
@@ -85,12 +91,13 @@ public class UserRepository : IUserRepository
 		var roles = await _userManager.GetRolesAsync(user);
 
 
-
+		// audience is claim also you can add it at claims , 1*
 		var claims = new List<Claim>
 		{
 			new Claim(ClaimTypes.Name, user.UserName),
 			new Claim(JwtRegisteredClaimNames.Jti, jwtTokenId   ),
-			new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+			new Claim(JwtRegisteredClaimNames.Sub, user.Id), 
+			
 		};
 
 		claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -100,6 +107,8 @@ public class UserRepository : IUserRepository
 		{
 			Subject = new ClaimsIdentity(claims),
 			Expires = DateTime.UtcNow.AddMinutes(SD.AccessTokenExpiresInNMinutes), // token will expire in 5 days
+			Issuer = _issuer,
+			Audience = _audiance,
 			SigningCredentials = new SigningCredentials(
 				new SymmetricSecurityKey(key),      // our secret key
 				SecurityAlgorithms.HmacSha256Signature) // algorithm to sign the token
