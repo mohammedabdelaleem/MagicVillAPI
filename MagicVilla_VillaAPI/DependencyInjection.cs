@@ -11,81 +11,71 @@ namespace MagicVilla_VillaAPI;
 
 public static class DependencyInjection
 {
-
 	public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
 	{
-		//CacheProfile  ==> DRY
+		// Controllers with cache profiles and JSON options
 		services.AddControllers(options =>
 		{
-			options.CacheProfiles.Add("Default30",
-				new CacheProfile()
-				{
-					Duration = 30
-				});
-
-			options.CacheProfiles.Add("NoCache",
-				new CacheProfile()
-				{
-					Location = ResponseCacheLocation.None,
-					NoStore = true
-				});
+			options.CacheProfiles.Add("Default30", new CacheProfile { Duration = 30 });
+			options.CacheProfiles.Add("NoCache", new CacheProfile
+			{
+				Location = ResponseCacheLocation.None,
+				NoStore = true
+			});
 		})
-	.AddJsonOptions(options =>
-	{
-		options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-	})
-	.AddNewtonsoftJson(); // Required for JsonPatchDocument
+		.AddJsonOptions(options =>
+		{
+			options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+		})
+		.AddNewtonsoftJson(); // For JsonPatchDocument support
 
-
-
+		// Add Swagger, DB, Mapping, and Response Caching
 		services
 			.AddSwaggerConfig()
 			.AddDatabaseConfig(configuration)
 			.AddMapsterConfig()
-			.AddResponseCaching(); // cashing 
+			.AddResponseCaching();
 
-
-		// adding service life time
+		// Scoped services
 		services.AddScoped<IUnitOfWork, UnitOfWork>();
 		services.AddScoped<IVillaRepository, VillaRepository>();
 		services.AddScoped<IVillaNumberRepository, VillaNumberRepository>();
 		services.AddScoped<IUserRepository, UserRepository>();
 
-
-
-		// Identity
+		// Identity setup
 		services.AddIdentity<ApplicationUser, IdentityRole>()
 			.AddEntityFrameworkStores<AppDbContext>();
 
+		// Authentication config
+		services.AddAuthConfig(configuration);
 
+		return services;
+	}
 
-
-		// Add Authentication
-
-		var key = configuration.GetValue<string>("ApiSettings:Secret");
-
-		services.AddAuthentication(x =>
+	private static IServiceCollection AddDatabaseConfig(this IServiceCollection services, IConfiguration configuration)
+	{
+		services.AddDbContext<AppDbContext>(options =>
 		{
-			x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-			x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-		})
-			.AddJwtBearer(x => {
-				x.RequireHttpsMetadata = false;
-				x.SaveToken = true;
-				x.TokenValidationParameters = new TokenValidationParameters
-				{
-					ValidateIssuerSigningKey = true,
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
-					ValidIssuer = configuration.GetValue<string>("Jwt:Issuer"),
-					ValidAudience = configuration.GetValue<string>("Jwt:Audience"),
-					ValidateIssuer = true,
-					ValidateAudience = true,
-					ClockSkew = TimeSpan.Zero, // after a token is expired 1 second age. mark it as expired [No Mercy]
-				}; 
-			}); 
+			options.UseSqlServer(configuration.GetConnectionString("constr"));
+		});
 
+		return services;
+	}
 
-		// swager and versioning cofig
+	private static IServiceCollection AddMapsterConfig(this IServiceCollection services)
+	{
+		var mappingConfigurations = TypeAdapterConfig.GlobalSettings;
+		mappingConfigurations.Scan(Assembly.GetExecutingAssembly());
+
+		services.AddScoped<IMapper>(provider => new Mapper(TypeAdapterConfig.GlobalSettings));
+
+		return services;
+	}
+
+	private static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
+	{
+		services.AddEndpointsApiExplorer();
+
 		services.AddSwaggerGen(options =>
 		{
 			options.SwaggerDoc("v1", new OpenApiInfo
@@ -105,6 +95,7 @@ public static class DependencyInjection
 					Url = new Uri("https://example.com/license")
 				}
 			});
+
 			options.SwaggerDoc("v2", new OpenApiInfo
 			{
 				Version = "v2.0",
@@ -123,6 +114,7 @@ public static class DependencyInjection
 				}
 			});
 		});
+
 		services.AddApiVersioning(options =>
 		{
 			options.AssumeDefaultVersionWhenUnspecified = true;
@@ -136,41 +128,34 @@ public static class DependencyInjection
 			options.SubstituteApiVersionInUrl = true;
 		});
 
-
 		return services;
 	}
 
-
-	private static IServiceCollection AddDatabaseConfig(this IServiceCollection services, IConfiguration configuration)
+	private static IServiceCollection AddAuthConfig(this IServiceCollection services, IConfiguration configuration)
 	{
-		services.AddDbContext<AppDbContext>(options =>
+		var key = configuration.GetValue<string>("ApiSettings:Secret");
+
+		services.AddAuthentication(options =>
 		{
-			options.UseSqlServer(configuration.GetConnectionString("constr"));
+			options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+			options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+		})
+		.AddJwtBearer(options =>
+		{
+			options.RequireHttpsMetadata = false;
+			options.SaveToken = true;
+			options.TokenValidationParameters = new TokenValidationParameters
+			{
+				ValidateIssuerSigningKey = true,
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)),
+				ValidIssuer = configuration.GetValue<string>("Jwt:Issuer"),
+				ValidAudience = configuration.GetValue<string>("Jwt:Audience"),
+				ValidateIssuer = true,
+				ValidateAudience = true,
+				ClockSkew = TimeSpan.Zero // No tolerance for expired tokens
+			};
 		});
 
 		return services;
 	}
-
-
-	private static IServiceCollection AddMapsterConfig(this IServiceCollection services)
-	{
-		// Register Mapster 
-		var mappingConfigurations = TypeAdapterConfig.GlobalSettings;
-		mappingConfigurations.Scan(Assembly.GetExecutingAssembly());
-		services.AddScoped<IMapper>(provider => new Mapper(TypeAdapterConfig.GlobalSettings));
-
-		return services;
-	}
-
-	private static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
-	{
-		// Swagger service
-		services.AddEndpointsApiExplorer();
-		services.AddSwaggerGen();
-
-		return services;
-	}
-
-
-
 }

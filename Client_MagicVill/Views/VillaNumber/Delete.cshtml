@@ -3,7 +3,8 @@
 <form asp-action="Delete" asp-controller="VillaNumber" class="container mt-4">
 
     @* villa number is disabled here so we need hidden property for it  *@
-    <input hidden asp-for="@Model.VillaNumber.VillaNo" /> 
+    <input hidden asp-for="VillaNumber.VillaNo" />
+	@* <input hidden asp-for="VillaNumber.VillaId" /> *@
 
     <div class="mb-3">
         <label asp-for="VillaNumber.VillaNo" class="form-label"></label>
@@ -13,7 +14,7 @@
     <hr />
     <label asp-for="VillaNumber.VillaId" class="control-label"></label>
     <select asp-for="VillaNumber.VillaId" disabled asp-items="Model.VillaList">
-        <option disabled selected> -- Select Category --</option>
+        <option disabled> -- Select Category --</option>
     </select>
 
     <hr />

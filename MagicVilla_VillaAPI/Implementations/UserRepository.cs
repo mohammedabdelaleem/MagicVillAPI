@@ -268,7 +268,7 @@ public class UserRepository : IUserRepository
 			JwtTokenId = tokenId,
 			UserId = userId,
 			Refresh_Token = $"{Guid.NewGuid()}-{Guid.NewGuid()}",
-			ExpiresAt = DateTime.UtcNow.AddMinutes(SD.RefreshTokenExpiresInNMinutes)
+			ExpiresAt = DateTime.UtcNow.AddDays(SD.RefreshTokenExpiresInNDays)
 		};
 
 		await _context.RefreshTokens.AddAsync(refreshToken, cancellationToken);
