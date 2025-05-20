@@ -22,7 +22,7 @@ if (app.Environment.IsDevelopment())
 	{
 		options.SwaggerEndpoint("/swagger/v2/swagger.json", "Magic_VillaV2");
 		options.SwaggerEndpoint("/swagger/v1/swagger.json", "Magic_VillaV1");
-		options.RoutePrefix = "";
+		options.RoutePrefix = ""; // when change the env-var into production you need to comment this line at least for testing 
 	}
 	);
 }
