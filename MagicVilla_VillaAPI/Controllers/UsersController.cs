@@ -124,4 +124,11 @@
 		throw new FileNotFoundException();
 	}
 
+	[HttpGet("ImageError")]
+	public async Task<IActionResult> ImageError()
+	{
+		throw new BadImageFormatException("Fake Image Exception");
+	}
+	// we want to capture the BadImageFormatException and we want to handle that using filters 
+
 }

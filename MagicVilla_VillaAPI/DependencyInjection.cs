@@ -1,4 +1,5 @@
 ﻿using MagicVilla_VillaAPI.Configurations;
+using MagicVilla_VillaAPI.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,8 @@ public static class DependencyInjection
 				Location = ResponseCacheLocation.None,
 				NoStore = true
 			});
+
+			options.Filters.Add<CustomeExceptionFilter>();
 		})
 		.AddJsonOptions(options =>
 		{
