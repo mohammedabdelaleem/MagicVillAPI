@@ -33,7 +33,19 @@ public static class DependencyInjection
 		{
 			options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 		})
-		.AddNewtonsoftJson(); // For JsonPatchDocument support
+		.AddNewtonsoftJson()// For JsonPatchDocument support
+		.ConfigureApiBehaviorOptions(options =>
+		{
+			options.ClientErrorMapping[StatusCodes.Status500InternalServerError] = new ClientErrorData
+			{
+				Link = "https://neetcode.io/roadmap" // if the server returns a custome error endpoint you can defined what status code for this endpoint and provide a link for that 
+
+			};
+			options.ClientErrorMapping[StatusCodes.Status501NotImplemented] = new ClientErrorData
+			{
+				Link = "https://www.udemy.com/"
+			};
+		});
 
 		// Add Swagger, DB, Mapping, and Response Caching
 		services
