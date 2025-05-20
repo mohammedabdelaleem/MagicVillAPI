@@ -46,10 +46,6 @@ public class VillaNumberController : ControllerBase
 		}
 	}
 
-
-
-
-
 	//[MapToApiVersion("1.0")]
 	[HttpGet("{villaNo:int}")]
 	[ProducesResponseType(StatusCodes.Status200OK)]

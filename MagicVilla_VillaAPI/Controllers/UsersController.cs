@@ -63,7 +63,6 @@
 		}
 
 
-
 	[HttpPost("refresh")]
 	public async Task<IActionResult> GetNewTokenFromRefreshToken([FromBody] TokenDTO tokenDTO, CancellationToken cancellationToken = default)
 	{
@@ -118,7 +117,12 @@
 	
 	}
 
+	// Exception Handling 
 
-
+	[HttpGet("Error")]
+	public async Task<IActionResult> Error()
+	{
+		throw new FileNotFoundException();
+	}
 
 }

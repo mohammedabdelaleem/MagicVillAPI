@@ -12,7 +12,7 @@ public static class SD
 
 	public readonly static string AccessToken = "JwtToken";
 	public readonly static string RefreshToken = "RefreshToken";
-	public readonly static int AccessTokenExpiresInNMinutes = 1;
+	public readonly static int AccessTokenExpiresInNMinutes = 10;
 	public readonly static int RefreshTokenExpiresInNDays = 2;
 
 

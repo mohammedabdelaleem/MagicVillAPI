@@ -1,4 +1,6 @@
 
+using System.Net;
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDependencies(builder.Configuration);
 
@@ -6,6 +8,8 @@ builder.Services.AddDependencies(builder.Configuration);
 
 
 var app = builder.Build();
+
+System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
