@@ -118,7 +118,6 @@
 	}
 
 	// Exception Handling 
-
 	[HttpGet("Error")]
 	public async Task<IActionResult> Error()
 	{
